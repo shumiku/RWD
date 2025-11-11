@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的個人簡介</title>
+<style>
+    :root {
+        /* 🌞 亮色主題 */
+        --bg-color: #f9f9ff;
+        --text-color: #333;
+        --card-bg: #ffffff;
+        --header-bg: #3b82f6;
+        --header-text: #ffffff;
+        --accent-color: #2563eb;
+        --footer-bg: #1e3a8a;
+        --footer-text: #ffffff;
+    }
+
+    body.dark-mode {
+        /* 🌙 暗色主題 */
+        --bg-color: #0f172a;
+        --text-color: #e2e8f0;
+        --card-bg: #1e293b;
+        --header-bg: #1e40af;
+        --header-text: #f8fafc;
+        --accent-color: #60a5fa;
+        --footer-bg: #0f172a;
+        --footer-text: #cbd5e1;
+    }
+
+    body {
+        font-family: "Microsoft JhengHei", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: var(--bg-color);
+        color: var(--text-color);
+        transition: all 0.4s ease;
+    }
+
+    header {
+        background-color: var(--header-bg);
+        color: var(--header-text);
+        text-align: center;
+        padding: 20px 0;
+        font-size: 28px;
+        position: relative;
+    }
+
+    /* 🌗 主題切換按鈕 */
+    .theme-toggle {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        background: var(--card-bg);
+        color: var(--accent-color);
+        border: 2px solid var(--accent-color);
+        border-radius: 20px;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+
+    .theme-toggle:hover {
+        background: var(--accent-color);
+        color: white;
+    }
+
+    main {
+        max-width: 900px;
+        margin: 40px auto;
+        background: var(--card-bg);
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        padding: 30px;
+    }
+
+    .profile {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .profile img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--accent-color);
+    }
+
+    .info h2 {
+        margin: 0;
+        color: var(--accent-color);
+    }
+
+    h3 {
+        border-left: 5px solid var(--accent-color);
+        padding-left: 10px;
+        color: var(--accent-color);
+    }
+
+    ul {
+        line-height: 1.8;
+    }
+
+    a {
+        color: var(--accent-color);
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    footer {
+        background-color: var(--footer-bg);
+        color: var(--footer-text);
+        text-align: center;
+        padding: 10px 0;
+        margin-top: 40px;
+        font-size: 14px;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    🌟 我的個人簡介 🌟
+    <button class="theme-toggle" id="themeToggle">切換主題</button>
+</header>
+
+<main>
+    <div class="profile">
+        <img src="https://via.placeholder.com/150" alt="我的照片">
+        <div class="info">
+            <h2>王小明</h2>
+            <p>職業：前端網頁設計師</p>
+            <p>地點：台北市</p>
+            <p>一句話介紹：熱愛設計與創造的網頁開發者 🚀</p>
+        </div>
+    </div>
+
+    <section>
+        <h3>關於我</h3>
+        <p>嗨！我是小明，一位喜歡設計、編程與學習新技術的創作者。擅長使用 HTML、CSS、JavaScript 製作互動網頁，也熟悉 React 與 UI 設計。平時喜歡攝影與聽音樂。</p>
+    </section>
+
+    <section>
+        <h3>我的作品</h3>
+        <ul>
+            <li><a href="#">個人作品集網站</a></li>
+            <li><a href="#">互動式行事曆 App</a></li>
+            <li><a href="#">旅遊紀錄網頁</a></li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>興趣嗜好</h3>
+        <ul>
+            <li>🎵 聽音樂</li>
+            <li>📸 攝影</li>
+            <li>💻 寫程式</li>
+            <li>🌏 旅遊探索</li>
+        </ul>
+    </section>
+</main>
+
+<footer>
+    📧 聯絡我：example@mail.com ｜ © 2025 Wang Xiaoming
+</footer>
+
+<script>
+    const toggleBtn = document.getElementById('themeToggle');
+    const body = document.body;
+
+    // 檢查使用者是否有儲存主題設定
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-mode');
+    }
+
+    // 切換主題事件
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        // 儲存主題設定
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.setItem('theme', 'light');
+        }
+    });
+</script>
+
+</body>
+</html>
