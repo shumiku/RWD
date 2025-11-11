@@ -122,6 +122,22 @@
         margin-top: 40px;
         font-size: 14px;
     }
+
+    /* ✨ 關於我切換按鈕樣式 */
+    #aboutToggle {
+        margin-top: 10px;
+        background: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    #aboutToggle:hover {
+        background: #1e40af;
+    }
 </style>
 </head>
 <body>
@@ -133,9 +149,9 @@
 
 <main>
     <div class="profile">
-        <img src="https://via.placeholder.com/150" alt="我的照片">
+        <img src="1..avif" alt="我的照片">
         <div class="info">
-            <h2>王小明</h2>
+            <h2>莊小羽</h2>
             <p>職業：前端網頁設計師</p>
             <p>地點：台北市</p>
             <p>一句話介紹：熱愛設計與創造的網頁開發者 🚀</p>
@@ -144,7 +160,10 @@
 
     <section>
         <h3>關於我</h3>
-        <p>嗨！我是小明，一位喜歡設計、編程與學習新技術的創作者。擅長使用 HTML、CSS、JavaScript 製作互動網頁，也熟悉 React 與 UI 設計。平時喜歡攝影與聽音樂。</p>
+        <p id="aboutText">
+            嗨！我是小羽，熱愛設計與創造的前端工程師。
+        </p>
+        <button id="aboutToggle">顯示更多</button>
     </section>
 
     <section>
@@ -175,21 +194,30 @@
     const toggleBtn = document.getElementById('themeToggle');
     const body = document.body;
 
-    // 檢查使用者是否有儲存主題設定
+    // 🌗 檢查使用者主題設定
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
         body.classList.add('dark-mode');
     }
 
-    // 切換主題事件
+    // 🌗 主題切換
     toggleBtn.addEventListener('click', () => {
         body.classList.toggle('dark-mode');
-        // 儲存主題設定
-        if (body.classList.contains('dark-mode')) {
-            localStorage.setItem('theme', 'dark');
-        } else {
-            localStorage.setItem('theme', 'light');
-        }
+        localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+    });
+
+    // 💬 關於我切換簡短/詳細
+    const aboutText = document.getElementById('aboutText');
+    const aboutToggle = document.getElementById('aboutToggle');
+    let expanded = false;
+
+    const shortText = '嗨！我是小羽，熱愛設計與創造的前端工程師。';
+    const fullText = '嗨！我是小羽，一位喜歡設計、編程與學習新技術的創作者。擅長使用 HTML、CSS、JavaScript 製作互動網頁，也熟悉 React 與 UI 設計。平時喜歡攝影與聽音樂。';
+
+    aboutToggle.addEventListener('click', () => {
+        expanded = !expanded;
+        aboutText.textContent = expanded ? fullText : shortText;
+        aboutToggle.textContent = expanded ? '顯示較少' : '顯示更多';
     });
 </script>
 
