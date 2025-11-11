@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>我的個人簡介</title>
+<title>互動式個人簡介</title>
 <style>
     :root {
-        /* 🌞 亮色主題 */
         --bg-color: #f9f9ff;
         --text-color: #333;
         --card-bg: #ffffff;
@@ -16,9 +15,7 @@
         --footer-bg: #1e3a8a;
         --footer-text: #ffffff;
     }
-
     body.dark-mode {
-        /* 🌙 暗色主題 */
         --bg-color: #0f172a;
         --text-color: #e2e8f0;
         --card-bg: #1e293b;
@@ -35,7 +32,8 @@
         padding: 0;
         background: var(--bg-color);
         color: var(--text-color);
-        transition: all 0.4s ease;
+        transition: background 0.4s ease, color 0.4s ease;
+        scroll-behavior: smooth;
     }
 
     header {
@@ -44,10 +42,31 @@
         text-align: center;
         padding: 20px 0;
         font-size: 28px;
-        position: relative;
+        position: sticky;
+        top: 0;
+        z-index: 100;
     }
 
-    /* 🌗 主題切換按鈕 */
+    nav {
+        background: var(--card-bg);
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    nav a {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s;
+    }
+
+    nav a:hover {
+        color: #1e40af;
+    }
+
     .theme-toggle {
         position: absolute;
         top: 15px;
@@ -61,7 +80,6 @@
         font-weight: bold;
         transition: all 0.3s;
     }
-
     .theme-toggle:hover {
         background: var(--accent-color);
         color: white;
@@ -80,14 +98,16 @@
         display: flex;
         align-items: center;
         gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .profile img {
         width: 150px;
         height: 150px;
         border-radius: 50%;
-        object-fit: cover;
         border: 4px solid var(--accent-color);
+        object-fit: cover;
     }
 
     .info h2 {
@@ -101,6 +121,30 @@
         color: var(--accent-color);
     }
 
+    section {
+        margin-top: 30px;
+        animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    #aboutToggle, .toggle-btn {
+        margin-top: 10px;
+        background: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    #aboutToggle:hover, .toggle-btn:hover {
+        background: #1e40af;
+    }
+
     ul {
         line-height: 1.8;
     }
@@ -109,7 +153,6 @@
         color: var(--accent-color);
         text-decoration: none;
     }
-
     a:hover {
         text-decoration: underline;
     }
@@ -123,59 +166,53 @@
         font-size: 14px;
     }
 
-    /* ✨ 關於我切換按鈕樣式 */
-    #aboutToggle {
-        margin-top: 10px;
-        background: var(--accent-color);
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-
-    #aboutToggle:hover {
-        background: #1e40af;
+    /* 隱藏作品集區塊用 */
+    .hidden {
+        display: none;
     }
 </style>
 </head>
 <body>
 
 <header>
-    🌟 我的個人簡介 🌟
+    🌟 互動式個人簡介 🌟
     <button class="theme-toggle" id="themeToggle">切換主題</button>
 </header>
 
+<nav>
+    <a href="#about">關於我</a>
+    <a href="#works">我的作品</a>
+    <a href="#hobby">興趣嗜好</a>
+</nav>
+
 <main>
     <div class="profile">
-        <img src="1..avif" alt="我的照片">
+        <img src="https://via.placeholder.com/150" alt="我的照片">
         <div class="info">
-            <h2>莊小羽</h2>
+            <h2>莊莊螢羽</h2>
             <p>職業：前端網頁設計師</p>
             <p>地點：台北市</p>
             <p>一句話介紹：熱愛設計與創造的網頁開發者 🚀</p>
         </div>
     </div>
 
-    <section>
+    <section id="about">
         <h3>關於我</h3>
-        <p id="aboutText">
-            嗨！我是小羽，熱愛設計與創造的前端工程師。
-        </p>
+        <p id="aboutText">嗨！我是螢羽，熱愛設計與創造的前端工程師。</p>
         <button id="aboutToggle">顯示更多</button>
     </section>
 
-    <section>
+    <section id="works">
         <h3>我的作品</h3>
-        <ul>
+        <button class="toggle-btn" id="workToggle">展開 / 收合作品</button>
+        <ul id="workList" class="hidden">
             <li><a href="#">個人作品集網站</a></li>
             <li><a href="#">互動式行事曆 App</a></li>
             <li><a href="#">旅遊紀錄網頁</a></li>
         </ul>
     </section>
 
-    <section>
+    <section id="hobby">
         <h3>興趣嗜好</h3>
         <ul>
             <li>🎵 聽音樂</li>
@@ -191,33 +228,33 @@
 </footer>
 
 <script>
+    // 🌗 主題切換
     const toggleBtn = document.getElementById('themeToggle');
     const body = document.body;
-
-    // 🌗 檢查使用者主題設定
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        body.classList.add('dark-mode');
-    }
-
-    // 🌗 主題切換
+    if (savedTheme === 'dark') body.classList.add('dark-mode');
     toggleBtn.addEventListener('click', () => {
         body.classList.toggle('dark-mode');
         localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
     });
 
-    // 💬 關於我切換簡短/詳細
+    // 💬 關於我切換
     const aboutText = document.getElementById('aboutText');
     const aboutToggle = document.getElementById('aboutToggle');
     let expanded = false;
-
-    const shortText = '嗨！我是小羽，熱愛設計與創造的前端工程師。';
-    const fullText = '嗨！我是小羽，一位喜歡設計、編程與學習新技術的創作者。擅長使用 HTML、CSS、JavaScript 製作互動網頁，也熟悉 React 與 UI 設計。平時喜歡攝影與聽音樂。';
-
+    const shortText = '嗨！我是小明，熱愛設計與創造的前端工程師。';
+    const fullText = '嗨！我是小明，一位喜歡設計、編程與學習新技術的創作者。擅長使用 HTML、CSS、JavaScript 製作互動網頁，也熟悉 React 與 UI 設計。平時喜歡攝影與聽音樂。';
     aboutToggle.addEventListener('click', () => {
         expanded = !expanded;
         aboutText.textContent = expanded ? fullText : shortText;
         aboutToggle.textContent = expanded ? '顯示較少' : '顯示更多';
+    });
+
+    // 🧩 作品集展開/收合
+    const workToggle = document.getElementById('workToggle');
+    const workList = document.getElementById('workList');
+    workToggle.addEventListener('click', () => {
+        workList.classList.toggle('hidden');
     });
 </script>
 
