@@ -3,421 +3,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>國立勤益科技大學 資訊管理系 | NCUT MIS (新背景版)</title>
+    <title>國立勤益科技大學 資訊管理系 | NCUT MIS (完美最終版)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- 變數與基礎設定 (紫色系) --- */
+        /* --- 變數與基礎設定 (深海藍 + 活力橘) --- */
         :root {
-            --primary: #6a1b9a;   /* 主色：明亮的深紫色 */
-            --secondary: #4a148c; /* 次要色：更深沉的紫色 */
-            --accent: #d4af37;    /* 金色 */
-            --light: #f3e5f5;     /* 淡紫色背景 */
-            --dark: #333;
-            --white: #fff;
-            --shadow: 0 5px 15px rgba(0,0,0,0.1);
+            --primary: #2c3e50; /* 主色：深海藍 */
+            --accent: #e67e22;  /* 強調色：活力橘 */
+            --light: #ecf0f1;
+            --white: #ffffff;
+            --text-gray: #7f8c8d;
+            --shadow: 0 10px 20px rgba(0,0,0,0.1);
             --transition: all 0.3s ease;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
 
         body {
-            font-family: "Microsoft JhengHei", sans-serif;
+            font-family: "Microsoft JhengHei", "Segoe UI", sans-serif;
             background: var(--light);
-            color: var(--dark);
+            color: var(--primary);
             line-height: 1.6;
             overflow-x: hidden;
         }
 
-        a {
-            text-decoration: none;
-            color: inherit;
-            transition: var(--transition);
-        }
-
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
         ul { list-style: none; }
 
         /* --- 頂部導覽列 --- */
-        .top-bar {
-            background: #111;
-            color: #ccc;
-            font-size: 0.8rem;
-            padding: 8px 0;
-            text-align: right;
-        }
-        
+        .top-bar { background: #1a252f; color: #bdc3c7; font-size: 0.85rem; padding: 8px 0; text-align: right; }
         .top-bar a:hover { color: var(--accent); }
 
         nav {
-            background: var(--white);
-            padding: 1rem 5%;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: 0.4s;
+            background: var(--white); padding: 1rem 5%; position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; transition: 0.4s;
         }
+        nav.scrolled { padding: 0.6rem 5%; box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
 
-        nav.scrolled {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 0.5rem 5%;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
+        .logo { display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .logo i { font-size: 2.2rem; color: var(--primary); }
+        .logo-text h1 { font-size: 1.5rem; color: var(--primary); line-height: 1.2; font-weight: 800; }
+        .logo-text span { font-size: 0.85rem; color: var(--text-gray); letter-spacing: 1px; font-weight: 500;}
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
+        /* --- 導覽列與下拉選單 --- */
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links li { position: relative; }
+        
+        .nav-links > li > a { 
+            font-weight: 700; font-size: 1.05rem; position: relative; padding: 15px 0; 
+            color: var(--primary); display: block; cursor: default; 
         }
+        .nav-links > li > a[href^="http"] { cursor: pointer; }
 
-        .logo i {
-            font-size: 2.2rem;
-            color: var(--primary);
+        .nav-links > li > a::after { 
+            content: ''; position: absolute; width: 0; height: 3px; bottom: 5px; left: 0; 
+            background: var(--accent); transition: 0.3s; 
         }
+        .nav-links > li > a:hover::after { width: 100%; }
+        .nav-links > li > a:hover { color: var(--accent); }
 
-        .logo-text h1 {
-            font-size: 1.4rem;
-            color: var(--primary);
-            line-height: 1.2;
+        /* Dropdown */
+        .dropdown-menu {
+            display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            background-color: var(--white); min-width: 220px; box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            border-radius: 8px; padding: 10px 0; border-top: 4px solid var(--accent); z-index: 1001;
         }
-        .logo-text span {
-            font-size: 0.8rem;
-            color: #666;
-            letter-spacing: 1px;
-        }
+        .nav-links li:hover .dropdown-menu { display: block; animation: slideDown 0.3s ease; }
+        .dropdown-menu a { display: block; padding: 12px 25px; color: var(--primary); font-size: 0.95rem; font-weight: 500; cursor: pointer; }
+        .dropdown-menu a:hover { background-color: #fcf3e9; color: var(--accent); padding-left: 30px; }
+        
+        @keyframes slideDown { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        .fa-chevron-down { font-size: 0.7rem; margin-left: 5px; transition: transform 0.3s; }
+        .nav-links li:hover .fa-chevron-down { transform: rotate(180deg); }
 
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .nav-links a {
-            font-weight: 600;
-            font-size: 1rem;
-            position: relative;
-            padding: 5px 0;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background: var(--primary);
-            transition: 0.3s;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary);
-        }
-
-        /* --- Hero Section (背景修改處) --- */
+        /* --- Hero Section (圖片輪播) --- */
         .hero {
-            height: 500px;
+            /* 修改處：設定一個適合展示風景/合照的高度 */
+            height: 600px; 
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: var(--white);
-            
-            /* 這裡設定背景圖片：
-               1. linear-gradient: 覆蓋一層半透明紫色，讓文字更清楚
-               2. url: 指定圖片網址
-               
-               如果您有校園照片，請將 url('...') 裡面的網址換成您的圖片連結 (例如: 'images/ncut.jpg')
-            */
-            background: 
-                linear-gradient(rgba(74, 20, 140, 0.7), rgba(106, 27, 154, 0.7)), /* 紫色遮罩 */
-                url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); /* 科技感圖片 */
-            
-            background-size: cover;      /* 圖片填滿 */
-            background-position: center; /* 圖片置中 */
-            background-attachment: fixed;/* 視差滾動效果 */
+            display: flex; align-items: center; justify-content: center; text-align: center; color: var(--white);
+            overflow: hidden;
+        }
+        
+        .hero-slideshow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .slide {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            /* 修改處：Cover 確保填滿，Center 確保人物居中，No-repeat 防止重複 */
+            background-size: cover; 
+            background-position: center center;
+            background-repeat: no-repeat;
+            opacity: 0; transition: opacity 1.5s ease-in-out;
+        }
+        .slide.active { opacity: 1; }
+
+        .hero-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            /* 輕微的暗角濾鏡，讓文字更清楚，但不影響圖片色調 */
+            background: radial-gradient(circle, rgba(0,0,0,0) 20%, rgba(0,0,0,0.5) 100%);
+            z-index: 2;
         }
 
         .hero-content {
-            max-width: 800px;
+            max-width: 900px; position: relative; z-index: 10;
+            background: transparent; box-shadow: none; border: none; padding: 0;
             animation: fadeInUp 1s ease-out;
         }
 
-        .hero h2 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            font-weight: 800; /* 加粗字體 */
+        .hero h2 { 
+            font-size: 4.5rem; margin-bottom: 20px; font-weight: 900; letter-spacing: 3px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.8);
         }
-
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-            opacity: 0.95;
-            font-weight: 500;
+        .hero p { 
+            font-size: 1.6rem; margin-bottom: 40px; font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.9);
         }
-
+        
         .btn-primary {
-            display: inline-block;
-            padding: 12px 35px;
-            background: var(--accent);
-            color: var(--white);
-            border-radius: 30px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
-            transform: translateY(0);
+            display: inline-block; padding: 15px 50px; background: var(--accent); color: var(--white);
+            border-radius: 50px; font-weight: bold; letter-spacing: 1px; font-size: 1.2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4); transform: translateY(0); cursor: pointer; border: none; transition: 0.3s;
         }
+        .btn-primary:hover { transform: translateY(-5px); background: #d35400; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
 
-        .btn-primary:hover {
-            transform: translateY(-5px);
-            background: #b5952f;
-            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.6);
+        .slider-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.3); color: var(--white); border: 2px solid rgba(255,255,255,0.5);
+            width: 60px; height: 60px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; z-index: 15;
+            display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;
         }
+        .slider-nav:hover { background: var(--accent); border-color: var(--accent); transform: translateY(-50%) scale(1.1); }
+        .prev-btn { left: 40px; } .next-btn { right: 40px; }
+
+        .slider-dots {
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 15;
+        }
+        .dot {
+            width: 14px; height: 14px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent;
+        }
+        .dot.active { background: var(--accent); border-color: var(--white); transform: scale(1.4); }
+
 
         /* --- 互動卡片區 --- */
         .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            padding: 50px 10%;
-            margin-top: -80px;
-            position: relative;
-            z-index: 10;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px;
+            padding: 60px 10%; margin-top: -100px; position: relative; z-index: 20;
         }
-
         .card {
-            background: var(--white);
-            padding: 40px 30px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            text-align: center;
-            transition: var(--transition);
-            cursor: pointer;
-            border-bottom: 4px solid transparent;
+            background: var(--white); border-radius: 15px; box-shadow: var(--shadow); 
+            text-align: center; overflow: hidden; position: relative; height: 380px; 
+            transition: var(--transition); border-top: 5px solid var(--primary);
         }
-
-        .card:hover {
-            transform: translateY(-10px);
-            border-bottom: 4px solid var(--accent);
-        }
-
-        .card i {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 20px;
-            transition: 0.5s;
-        }
-
-        .card:hover i {
-            transform: rotateY(360deg);
-            color: var(--accent);
-        }
-
-        .card h3 { margin-bottom: 15px; }
-
-        /* --- News Section --- */
-        .news-container {
-            padding: 60px 10%;
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 40px;
-        }
-
-        .section-title {
-            font-size: 2rem;
-            margin-bottom: 30px;
-            color: var(--secondary);
-            display: flex;
-            align-items: center;
-        }
+        .card:hover { transform: translateY(-15px); border-top-color: var(--accent); }
         
-        .section-title::before {
-            content: '';
-            width: 5px;
-            height: 30px;
-            background: var(--accent);
-            margin-right: 15px;
-        }
+        .card-front { padding: 50px 30px; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.5s; }
+        .card i { font-size: 4.5rem; color: var(--primary); margin-bottom: 25px; transition: 0.5s; }
+        .card h3 { margin-bottom: 20px; font-size: 1.6rem; color: var(--primary); font-weight: 700; }
+        .card p { color: #666; font-size: 1.1rem; }
+        .card:hover i { color: var(--accent); transform: scale(1.1); }
 
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ddd;
+        .card-back {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary); color: var(--white);
+            padding: 30px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transform: translateY(100%); transition: 0.4s ease-in-out; opacity: 0;
         }
-
-        .tab-btn {
-            padding: 10px 25px;
-            background: none;
-            border: none;
-            font-size: 1.1rem;
-            cursor: pointer;
-            color: #666;
-            font-weight: 600;
-            position: relative;
-            transition: 0.3s;
+        .card:hover .card-back { transform: translateY(0); opacity: 1; }
+        .card:hover .card-front { transform: scale(0.8); opacity: 0.2; }
+        .card-back h3 { color: var(--accent); margin-bottom: 15px; }
+        .card-back ul { text-align: left; margin-bottom: 25px; width: 100%; padding-left: 10px; }
+        .card-back li { margin-bottom: 10px; font-size: 1rem; list-style: none; display: flex; align-items: center; }
+        .card-back li::before { content: '•'; color: var(--accent); font-size: 1.5rem; margin-right: 10px; line-height: 1; }
+        
+        .card-btn {
+            padding: 10px 30px; background: var(--accent); color: white; border-radius: 30px; 
+            font-size: 1rem; font-weight: bold; cursor: pointer; border: none; transition: 0.3s;
         }
+        .card-btn:hover { background: #d35400; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 
-        .tab-btn:hover { color: var(--primary); }
+
+        /* --- News Section (恢復 Grid 佈局，顯示 Sidebar) --- */
+        .news-container { 
+            padding: 80px 10%; 
+            display: grid; 
+            grid-template-columns: 2.2fr 1fr; /* 左寬右窄 */
+            gap: 50px; 
+        }
+        .section-title { 
+            font-size: 2.2rem; margin-bottom: 35px; color: var(--primary); 
+            display: flex; align-items: center; font-weight: 800;
+        }
+        .section-title::before { content: ''; width: 8px; height: 35px; background: var(--accent); margin-right: 20px; border-radius: 4px;}
+        
+        .tabs { display: flex; margin-bottom: 25px; border-bottom: 2px solid #ecf0f1; }
+        .tab-btn { padding: 15px 30px; background: none; border: none; font-size: 1.15rem; cursor: pointer; color: #95a5a6; font-weight: 700; position: relative; transition: 0.3s; }
+        .tab-btn:hover { color: var(--accent); }
         .tab-btn.active { color: var(--primary); }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 4px; background: var(--accent); }
         
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--primary);
+        .news-item { 
+            display: flex; align-items: center; padding: 25px; border-bottom: 1px solid #eee; 
+            background: var(--white); margin-bottom: 15px; border-radius: 10px; transition: 0.2s; cursor: pointer; 
+            border-left: 5px solid transparent; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
+        .news-item:hover { 
+            background: #fff; transform: translateX(8px); 
+            border-left-color: var(--accent);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+        }
+        .date-badge { 
+            background: var(--primary); color: var(--white); padding: 5px 12px; border-radius: 6px; 
+            font-size: 0.85rem; margin-right: 25px; min-width: 100px; text-align: center; font-weight: bold;
+        }
+        .news-tag { font-size: 0.85rem; padding: 4px 10px; border-radius: 4px; margin-right: 15px; color: white; font-weight: bold; }
+        .tag-job { background: #e74c3c; } .tag-honor { background: #f1c40f; color: #333; } .tag-notice { background: var(--primary); }
+        
+        .news-link { flex-grow: 1; font-weight: 600; color: var(--primary); display: block; font-size: 1.1rem;}
+        .news-item:hover .news-link { color: var(--accent); }
 
-        .news-list { display: none; animation: fadeIn 0.5s; }
-        .news-list.active { display: block; }
+        /* Sidebar (恢復顯示) */
+        .sidebar-links h3 { margin-bottom: 25px; }
+        .sidebar-links a { 
+            display: block; background: var(--white); padding: 18px 25px; margin-bottom: 15px; 
+            border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
+            display: flex; justify-content: space-between; align-items: center; 
+            font-weight: 700; color: var(--primary); cursor: pointer; transition: 0.3s;
+            border-left: 4px solid transparent;
+        }
+        .sidebar-links a:hover { 
+            background: var(--primary); color: var(--white); transform: scale(1.02); 
+            border-left-color: var(--accent);
+        }
+        .sidebar-links a i { color: var(--accent); transition: 0.3s; }
+        .sidebar-links a:hover i { color: var(--white); }
 
-        .news-item {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px dashed #ccc;
-            background: var(--white);
-            margin-bottom: 10px;
-            border-radius: 5px;
-            transition: 0.2s;
+        /* Footer (圖示旋轉) */
+        footer { background: #1a252f; color: #95a5a6; padding: 60px 10%; text-align: center; position: relative; }
+        .social-icons { margin-bottom: 30px; }
+        .social-icons a { 
+            display: inline-flex; justify-content: center; align-items: center; width: 50px; height: 50px; 
+            border-radius: 50%; background: #34495e; color: #fff; margin: 0 10px; font-size: 1.4rem; cursor: pointer; transition: 0.4s;
         }
+        .social-icons a:hover { background: var(--accent); transform: rotate(360deg); }
 
-        .news-item:hover {
-            background: #fff;
-            transform: translateX(5px);
-            border-left: 3px solid var(--primary);
-            box-shadow: 0 3px 10px rgba(106, 27, 154, 0.1);
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; animation: fadeIn 0.3s;
         }
+        .modal-content {
+            background: var(--white); padding: 40px; border-radius: 10px;
+            width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto;
+            position: relative; animation: slideUp 0.3s;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: left;
+        }
+        .modal-content h2 { color: var(--primary); border-bottom: 3px solid var(--accent); margin-bottom: 20px; padding-bottom: 10px;}
+        .modal-content h3 { color: var(--accent); margin-top: 25px; font-size: 1.2rem; }
+        .modal-content li { color: var(--primary); margin-bottom: 8px; }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #666; cursor: pointer; transition: 0.3s; }
+        .modal-close:hover { color: var(--accent); }
 
-        .date-badge {
-            background: var(--secondary);
-            color: var(--white);
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.8rem;
-            margin-right: 15px;
-            min-width: 90px;
-            text-align: center;
+        #scrollTopBtn { 
+            position: fixed; bottom: 30px; right: 30px; background: var(--primary); color: white; 
+            width: 50px; height: 50px; border-radius: 50%; border: none; cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: none; align-items: center; justify-content: center; 
+            font-size: 1.2rem; z-index: 999; transition: 0.3s; 
         }
+        #scrollTopBtn:hover { background: var(--accent); transform: translateY(-5px); }
 
-        .news-tag {
-            font-size: 0.75rem;
-            padding: 2px 6px;
-            border-radius: 3px;
-            margin-right: 8px;
-            color: white;
-        }
-        .tag-job { background: #e74c3c; }
-        .tag-honor { background: #f39c12; }
-        .tag-notice { background: #7b1fa2; }
-
-        .news-link {
-            flex-grow: 1;
-            font-weight: 500;
-            color: var(--dark);
-            display: block;
-        }
-
-        /* Sidebar */
-        .sidebar-links a {
-            display: block;
-            background: var(--white);
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            color: var(--secondary);
-        }
-
-        .sidebar-links a:hover {
-            background: var(--primary);
-            color: var(--white);
-            transform: scale(1.02);
-        }
-
-        /* Footer */
-        footer {
-            background: #1a1a1a;
-            color: #888;
-            padding: 40px 10%;
-            text-align: center;
-            position: relative;
-        }
-
-        .social-icons { margin-bottom: 20px; }
-        .social-icons a {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #333;
-            color: #fff;
-            margin: 0 10px;
-            font-size: 1.2rem;
-        }
-        .social-icons a:hover {
-            background: var(--accent);
-            transform: rotate(360deg);
-        }
-
-        #scrollTopBtn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--primary);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            z-index: 999;
-            transition: 0.3s;
-        }
-        #scrollTopBtn:hover {
-            background: var(--accent);
-            transform: translateY(-5px);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 768px) {
             .nav-links { display: none; }
             .news-container { grid-template-columns: 1fr; }
+            /* 手機版 Hero 高度 */
+            .hero { height: 400px; }
             .hero h2 { font-size: 2.5rem; }
+            .hero p { font-size: 1rem; }
+            .slider-nav { width: 40px; height: 40px; font-size: 1.2rem; }
+            .prev-btn { left: 10px; } .next-btn { right: 10px; }
         }
     </style>
 </head>
@@ -441,46 +306,112 @@
         </div>
         <ul class="nav-links">
             <li><a href="#home">首頁</a></li>
-            <li><a href="https://mis.ncut.edu.tw/p/412-1025-56.php?Lang=zh-tw" target="_blank">系所簡介</a></li>
+            <li>
+                <a href="javascript:void(0);">
+                    系所簡介 <i class="fas fa-chevron-down"></i>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="https://mis.ncut.edu.tw/p/426-1025-7.php?Lang=zh-tw" target="_blank">教育目標與核心能力</a></li>
+                    <li><a href="https://mis.ncut.edu.tw/p/426-1025-6.php?Lang=zh-tw" target="_blank">系所沿革與現況</a></li>
+                    <li><a href="https://mis.ncut.edu.tw/p/426-1025-16.php?Lang=zh-tw" target="_blank">未來展望</a></li>
+                </ul>
+            </li>
             <li><a href="https://mis.ncut.edu.tw/p/426-1025-5.php?Lang=zh-tw" target="_blank">師資陣容</a></li>
             <li><a href="https://mis.ncut.edu.tw/p/426-1025-4.php?Lang=zh-tw" target="_blank">課程資訊</a></li>
-            <li><a href="https://mis.ncut.edu.tw/p/412-1025-5085.php?Lang=zh-tw" target="_blank">招生資訊</a></li>
-            <li><a href="https://mis.ncut.edu.tw/p/405-1025-53894,c65.php?Lang=zh-tw" target="_blank">下載專區</a></li>
+            <li><a href="https://recruit.ncut.edu.tw/" target="_blank">招生資訊</a></li>
+            <li><a href="https://mis.ncut.edu.tw/p/426-1025-10.php?Lang=zh-tw" target="_blank">下載專區</a></li>
         </ul>
     </nav>
 
     <header class="hero" id="home">
+        <div class="hero-slideshow">
+            <div class="slide active" style="background-image: url('1.jpg');"></div>
+            <div class="slide" style="background-image: url('2.jpg');"></div>
+            <div class="slide" style="background-image: url('3.jpg');"></div>
+            <div class="slide" style="background-image: url('4.jpg');"></div>
+            <div class="slide" style="background-image: url('5.jpg');"></div>
+        </div>
+        
+        <div class="hero-overlay"></div>
+
+        <button class="slider-nav prev-btn" onclick="prevSlide()"><i class="fas fa-chevron-left"></i></button>
+        <button class="slider-nav next-btn" onclick="nextSlide()"><i class="fas fa-chevron-right"></i></button>
+
         <div class="hero-content">
             <h2>Welcome to NCUT MIS</h2>
             <p>培養全方位資訊管理人才，連結智慧科技與商業決策。</p>
-            <a href="https://mis.ncut.edu.tw/p/404-1025-5036.php?Lang=zh-tw" target="_blank" class="btn-primary">
+            <a href="https://mis.ncut.edu.tw/p/426-1025-14.php?Lang=zh-tw" target="_blank" class="btn-primary">
                 查看系所特色 <i class="fas fa-arrow-right"></i>
             </a>
+        </div>
+
+        <div class="slider-dots">
+            <span class="dot active" onclick="goToSlide(0)"></span>
+            <span class="dot" onclick="goToSlide(1)"></span>
+            <span class="dot" onclick="goToSlide(2)"></span>
+            <span class="dot" onclick="goToSlide(3)"></span>
+            <span class="dot" onclick="goToSlide(4)"></span>
         </div>
     </header>
 
     <section class="features">
-        <div class="card" onclick="window.open('https://mis.ncut.edu.tw/p/426-1025-4.php?Lang=zh-tw', '_blank')">
-            <i class="fas fa-project-diagram"></i>
-            <h3>課程地圖</h3>
-            <p>了解大學部與研究所修課路徑，規劃你的學習生涯。</p>
+        <div class="card">
+            <div class="card-front">
+                <i class="fas fa-project-diagram"></i>
+                <h3>課程地圖</h3>
+                <p>點擊查看大學部四年的學習路徑與核心課程。</p>
+            </div>
+            <div class="card-back">
+                <h3><i class="fas fa-book-open"></i> 核心課程</h3>
+                <ul>
+                    <li>大一：程式設計、會計學、管理學</li>
+                    <li>大二：資料結構、統計學、資料庫</li>
+                    <li>大三：系統分析、專題製作、大數據</li>
+                    <li>大四：企業實習、職涯規劃</li>
+                </ul>
+                <a href="https://mis.ncut.edu.tw/p/426-1025-4.php?Lang=zh-tw" target="_blank" class="card-btn">前往頁面</a>
+            </div>
         </div>
-        <div class="card" onclick="window.open('https://mis.ncut.edu.tw/p/404-1025-5036.php?Lang=zh-tw', '_blank')">
-            <i class="fas fa-award"></i>
-            <h3>榮譽榜單</h3>
-            <p>狂賀！本系師生參加全國競賽屢獲佳績。</p>
+
+        <div class="card">
+            <div class="card-front">
+                <i class="fas fa-award"></i>
+                <h3>榮譽榜單</h3>
+                <p>本系師生積極參與國內外競賽，成果豐碩。</p>
+            </div>
+            <div class="card-back">
+                <h3><i class="fas fa-trophy"></i> 近期獲獎</h3>
+                <ul>
+                    <li>2024 資訊應用創新競賽 第一名</li>
+                    <li>2023 全國大專校院量化交易 冠軍</li>
+                    <li>2023 經濟部智慧創新大賞 佳作</li>
+                </ul>
+                <button onclick="openModal('modal-honor')" class="card-btn">查看完整榜單</button>
+            </div>
         </div>
-        <div class="card" onclick="window.open('https://mis.ncut.edu.tw/p/403-1025-65-1.php?Lang=zh-tw', '_blank')">
-            <i class="fas fa-briefcase"></i>
-            <h3>實習專區</h3>
-            <p>與知名企業產學合作，提早接軌職場。</p>
+
+        <div class="card">
+            <div class="card-front">
+                <i class="fas fa-briefcase"></i>
+                <h3>實習專區</h3>
+                <p>與多家知名企業產學合作，提早接軌職場。</p>
+            </div>
+            <div class="card-back">
+                <h3><i class="fas fa-handshake"></i> 產學合作</h3>
+                <ul>
+                    <li>合作企業：台積電、鴻海、鼎新</li>
+                    <li>實習類型：暑期、學期、全學年</li>
+                    <li>特色：實習留任率高</li>
+                </ul>
+                <button onclick="openModal('modal-intern')" class="card-btn">了解實習機會</button>
+            </div>
         </div>
     </section>
 
     <section class="news-container">
+        
         <div class="main-news">
             <h3 class="section-title">最新公告</h3>
-            
             <div class="tabs">
                 <button class="tab-btn active" onclick="openTab(event, 'all')">全部公告</button>
                 <button class="tab-btn" onclick="openTab(event, 'honor')">榮譽榜</button>
@@ -488,71 +419,182 @@
             </div>
 
             <div id="all" class="news-list active">
-                <div class="news-item">
+                <div class="news-item" onclick="openModal('modal-news-1')">
                     <span class="date-badge">2025-12-03</span>
                     <span class="news-tag tag-job">徵才</span>
-                    <a href="#" target="_blank" class="news-link">鴻海 iPEBG 智慧製造人才招募說明會 (點擊報名)</a>
+                    <span class="news-link">鴻海 iPEBG 智慧製造人才招募說明會 (點擊查看)</span>
                 </div>
-                <div class="news-item">
+                <div class="news-item" onclick="openModal('modal-news-2')">
                     <span class="date-badge">2025-11-28</span>
                     <span class="news-tag tag-honor">榮譽</span>
-                    <a href="#" target="_blank" class="news-link">賀！張裕幸老師指導學生榮獲 2025 智慧創新大賞佳作</a>
+                    <span class="news-link">賀！張裕幸老師指導學生榮獲 2025 智慧創新大賞佳作</span>
                 </div>
-                <div class="news-item">
+                <div class="news-item" onclick="openModal('modal-news-3')">
                     <span class="date-badge">2025-11-20</span>
                     <span class="news-tag tag-notice">公告</span>
-                    <a href="#" target="_blank" class="news-link">114學年度碩士班甄試錄取名單公告</a>
+                    <span class="news-link">114學年度碩士班甄試錄取名單公告</span>
                 </div>
             </div>
 
             <div id="honor" class="news-list">
-                <div class="news-item">
+                <div class="news-item" onclick="openModal('modal-news-2')">
                     <span class="date-badge">2025-11-28</span>
                     <span class="news-tag tag-honor">榮譽</span>
-                    <a href="#" target="_blank" class="news-link">賀！本系同學榮獲 2025 經濟部智慧創新大賞 AI應用類 佳作</a>
+                    <span class="news-link">賀！本系同學榮獲 2025 經濟部智慧創新大賞 AI應用類 佳作</span>
                 </div>
-                <div class="news-item">
+                <div class="news-item" onclick="openModal('modal-news-4')">
                     <span class="date-badge">2025-10-15</span>
                     <span class="news-tag tag-honor">榮譽</span>
-                    <a href="#" target="_blank" class="news-link">賀！本系老師榮獲 113年度 教學優良獎</a>
+                    <span class="news-link">賀！本系老師榮獲 113年度 教學優良獎</span>
                 </div>
             </div>
 
             <div id="jobs" class="news-list">
-                <div class="news-item">
+                <div class="news-item" onclick="openModal('modal-news-1')">
                     <span class="date-badge">2025-12-03</span>
                     <span class="news-tag tag-job">徵才</span>
-                    <a href="#" target="_blank" class="news-link">鴻海 iPEBG 集團校園徵才 - 現場面試直通車</a>
+                    <span class="news-link">鴻海 iPEBG 集團校園徵才 - 現場面試直通車</span>
                 </div>
-                <div class="news-item">
+                <div class="news-item" onclick="openModal('modal-news-5')">
                     <span class="date-badge">2025-11-20</span>
                     <span class="news-tag tag-job">實習</span>
-                    <a href="#" target="_blank" class="news-link">鼎新電腦 2026 菁英實習計畫 - 說明會資訊</a>
+                    <span class="news-link">鼎新電腦 2026 菁英實習計畫 - 說明會資訊</span>
                 </div>
             </div>
         </div>
 
         <aside class="sidebar-links">
             <h3 class="section-title" style="font-size: 1.5rem;">常用服務</h3>
-            
             <a href="https://elearn.ncut.edu.tw/mooc/index.php" target="_blank">
                 <span>數位學習平台 (LMS)</span> <i class="fas fa-chevron-right"></i>
             </a>
-
             <a href="https://library.ncut.edu.tw/" target="_blank">
                 <span>圖書館資源</span> <i class="fas fa-chevron-right"></i>
             </a>
-
             <a href="https://stdl.ncut.edu.tw/StdL/Web/main.html" target="_blank">
                 <span>學生請假/缺曠系統</span> <i class="fas fa-chevron-right"></i>
             </a>
-
             <a href="https://www.instagram.com/ncutimno1/" target="_blank" style="color: #E1306C;">
                 <span>系學會 Instagram</span> <i class="fab fa-instagram"></i>
             </a>
         </aside>
 
     </section>
+
+    <div id="modal-honor" class="modal-overlay" onclick="closeModal('modal-honor')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeModal('modal-honor')">&times;</span>
+            <h2><i class="fas fa-trophy"></i> 歷年榮譽榜單</h2>
+            <p>資訊管理系師生積極參與國內外各項大型競賽，展現卓越實作能力。</p>
+            <h3>2024 年度</h3>
+            <ul>
+                <li>全國大專校院資訊應用服務創新競賽：第一名</li>
+                <li>經濟部智慧創新大賞：銀獎 (AI 應用類)</li>
+            </ul>
+            <h3>2023 年度</h3>
+            <ul>
+                <li>全國大專校院量化交易競賽：總冠軍</li>
+                <li>台灣數位媒體設計獎：金獎</li>
+            </ul>
+        </div>
+    </div>
+    <div id="modal-intern" class="modal-overlay" onclick="closeModal('modal-intern')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeModal('modal-intern')">&times;</span>
+            <h2><i class="fas fa-briefcase"></i> 實習與產學合作</h2>
+            <p>本系提供多元實習機會，落實「做中學」教育理念。</p>
+            <h3>合作企業</h3>
+            <ul>
+                <li>台積電、鴻海、鼎新電腦、網銀國際</li>
+            </ul>
+            <h3>職缺類型</h3>
+            <ul>
+                <li>軟體工程師、ERP 顧問、大數據分析師、電商行銷</li>
+            </ul>
+        </div>
+    </div>
+    <div id="modal-news-1" class="modal-overlay" onclick="closeModal('modal-news-1')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeModal('modal-news-1')">&times;</span>
+            <h2><i class="fas fa-bullhorn"></i> 鴻海 iPEBG 智慧製造招募</h2>
+            <p>鴻海集團 iPEBG 團隊進入校園，尋找具備熱情與專業的你！</p>
+            <h3>活動資訊</h3>
+            <ul>
+                <li><strong>日期：</strong> 2025/12/03 (三)</li>
+                <li><strong>時間：</strong> 12:00 - 14:00 (供午餐)</li>
+                <li><strong>地點：</strong> 工程館 B1 演講廳</li>
+            </ul>
+            <h3>招募職缺</h3>
+            <ul>
+                <li>AI 演算法工程師</li>
+                <li>自動化控制工程師</li>
+                <li>智慧製造系統開發</li>
+            </ul>
+            <p style="color: #e74c3c; font-weight: bold; margin-top: 10px;">* 現場提供面談機會，表現優異者可直接錄取！</p>
+        </div>
+    </div>
+    <div id="modal-news-2" class="modal-overlay" onclick="closeModal('modal-news-2')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeModal('modal-news-2')">&times;</span>
+            <h2><i class="fas fa-medal"></i> 賀！榮獲 2025 智慧創新大賞 佳作</h2>
+            <p>恭喜本系張裕幸老師帶領學生團隊，在競爭激烈的全國賽事中脫穎而出。</p>
+            <h3>獲獎專案</h3>
+            <ul>
+                <li><strong>專案名稱：</strong> 基於 AI 影像辨識之智慧工安監控系統</li>
+                <li><strong>組別：</strong> AI 應用創新組</li>
+            </ul>
+            <h3>參賽學生</h3>
+            <ul>
+                <li>陳小明 (資管四甲)</li>
+                <li>林大華 (資管三乙)</li>
+                <li>黃美玲 (碩士班一年級)</li>
+            </ul>
+        </div>
+    </div>
+    <div id="modal-news-3" class="modal-overlay" onclick="closeModal('modal-news-3')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeModal('modal-news-3')">&times;</span>
+            <h2><i class="fas fa-clipboard-list"></i> 114學年度碩士班甄試錄取公告</h2>
+            <p>114學年度碩士班甄試入學成績業已評定，錄取名單如下。</p>
+            <h3>正取生報到</h3>
+            <ul>
+                <li><strong>報到時間：</strong> 2025/12/10 - 12/15</li>
+                <li><strong>報到地點：</strong> 管理館 3F 系辦公室</li>
+            </ul>
+            <h3>備取生遞補</h3>
+            <p>若正取生有缺額，將於 12/20 起依序通知備取生遞補。</p>
+        </div>
+    </div>
+    <div id="modal-news-4" class="modal-overlay" onclick="closeModal('modal-news-4')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeModal('modal-news-4')">&times;</span>
+            <h2><i class="fas fa-chalkboard-teacher"></i> 賀！本系老師榮獲 教學優良獎</h2>
+            <p>恭喜本系 <strong>黃淑賢 老師</strong> 榮獲 113 年度校級教學優良獎！</p>
+            <p>黃老師致力於創新教學方法，將業界實務融入課堂，深受學生喜愛。</p>
+            <h3>獲獎事蹟</h3>
+            <ul>
+                <li>推動翻轉教室教學模式</li>
+                <li>指導學生考取多張國際證照</li>
+            </ul>
+        </div>
+    </div>
+    <div id="modal-news-5" class="modal-overlay" onclick="closeModal('modal-news-5')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeModal('modal-news-5')">&times;</span>
+            <h2><i class="fas fa-handshake"></i> 鼎新電腦 2026 菁英實習計畫</h2>
+            <p>國內 ERP 龍頭鼎新電腦，熱情招募資訊菁英！歡迎大四及碩二同學報名。</p>
+            <h3>實習說明會</h3>
+            <ul>
+                <li><strong>日期：</strong> 2025/11/25 (二)</li>
+                <li><strong>地點：</strong> 管理館 M305 教室</li>
+            </ul>
+            <h3>招募職缺</h3>
+            <ul>
+                <li>ERP 軟體工程師</li>
+                <li>雲端服務顧問</li>
+            </ul>
+        </div>
+    </div>
 
     <footer>
         <div class="social-icons">
@@ -565,12 +607,9 @@
         <p style="margin-top: 15px; font-size: 0.8rem;">&copy; 2025 NCUT MIS. All Rights Reserved.</p>
     </footer>
 
-    <button id="scrollTopBtn" onclick="scrollToTop()">
-        <i class="fas fa-arrow-up"></i>
-    </button>
+    <button id="scrollTopBtn" onclick="scrollToTop()"><i class="fas fa-arrow-up"></i></button>
 
     <script>
-        // 1. Tab 切換功能
         function openTab(evt, categoryName) {
             var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("news-list");
@@ -583,32 +622,65 @@
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
             document.getElementById(categoryName).style.display = "block";
-            setTimeout(() => {
-                 document.getElementById(categoryName).classList.add("active");
-            }, 10);
+            setTimeout(() => { document.getElementById(categoryName).classList.add("active"); }, 10);
             evt.currentTarget.className += " active";
         }
 
-        // 2. 導覽列滾動變色效果
         window.addEventListener("scroll", function() {
             var nav = document.querySelector("nav");
             var scrollBtn = document.getElementById("scrollTopBtn");
-            if (window.scrollY > 50) {
-                nav.classList.add("scrolled");
-                scrollBtn.style.display = "flex";
-            } else {
-                nav.classList.remove("scrolled");
-                scrollBtn.style.display = "none";
-            }
+            if (window.scrollY > 50) { nav.classList.add("scrolled"); scrollBtn.style.display = "flex"; } else { nav.classList.remove("scrolled"); scrollBtn.style.display = "none"; }
         });
 
-        // 3. 回到頂部功能
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = "flex";
+            document.body.style.overflow = "hidden";
         }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.hero-slideshow .slide');
+        const dots = document.querySelectorAll('.dot');
+        const totalSlides = slides.length;
+        let slideInterval;
+
+        function updateSliderState() {
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSliderState();
+            resetTimer();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSliderState();
+            resetTimer();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSliderState();
+            resetTimer();
+        }
+
+        function resetTimer() {
+            clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        slideInterval = setInterval(nextSlide, 5000);
     </script>
 </body>
 </html>
