@@ -1,12 +1,1255 @@
-<!DOCTYPE html>\
-<html>
-    <h1>
-        大家好
-    </h1>
-    <h2>
-        你好
-    </h2>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排球少年!! 互動官網 (Ultimate Version)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Oswald:wght@500;700;900&family=Shippori+Mincho:wght@800&display=swap');
+
+        :root {
+            --theme-color: #F99132;
+            --bg-color: #f0f0f0;
+            --text-main: #1a1a1a;
+            --font-main: 'Noto Sans TC', sans-serif;
+            --font-display: 'Oswald', sans-serif;
+            --accent-blue: #3498db;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: var(--font-main); 
+            background: var(--bg-color); 
+            color: var(--text-main); 
+            overflow-x: hidden; 
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* ==================== HERO SECTION ==================== */
+        .hero-section {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #111; z-index: 1000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            overflow: hidden; transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1);
+        }
+        .hero-section.slide-out { transform: translateY(-100%); }
+
+        .marquee-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; opacity: 0.15; z-index: 1; }
+        .marquee-row { white-space: nowrap; font-family: 'Shippori Mincho', serif; font-size: 10vh; line-height: 1.2; font-weight: 900; color: transparent; -webkit-text-stroke: 1px #fff; display: flex; width: 200%; }
+        .marquee-content { width: 50%; display: flex; justify-content: space-around; }
+        .marquee-content span { padding-right: 80px; }
+
+        .scroll-left { animation: scrollLeft 30s linear infinite; }
+        .scroll-right { animation: scrollRight 30s linear infinite; }
+        @keyframes scrollLeft { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes scrollRight { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+
+        .hero-visual { z-index: 10; text-align: center; position: relative; mix-blend-mode: hard-light; padding: 0 20px; }
+        .hero-jp { font-family: 'Shippori Mincho', serif; color: var(--theme-color); font-size: clamp(2rem, 5vw, 4rem); margin-bottom: -10px; z-index: 2; position: relative; text-shadow: 0 0 20px rgba(249, 145, 50, 0.8); animation: fadeInUp 1s ease; letter-spacing: 5px; }
+        .hero-title { font-family: var(--font-display); font-size: clamp(4rem, 15vw, 12rem); line-height: 0.9; color: #fff; font-weight: 900; letter-spacing: -2px; transform: skewX(-10deg); text-shadow: 10px 10px 0px rgba(255, 255, 255, 0.1); position: relative; }
+        .enter-btn { margin-top: 50px; padding: 15px 60px; background: transparent; border: 2px solid #fff; color: #fff; font-family: var(--font-display); font-size: 1.5rem; letter-spacing: 3px; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; z-index: 20; text-transform: uppercase; font-weight: 700; }
+        .enter-btn:hover { background: #fff; color: #000; box-shadow: 0 0 30px rgba(255,255,255,0.5); }
+        .enter-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--theme-color); transition: 0.3s; z-index: -1; transform: skewX(-20deg); }
+        .enter-btn:hover::before { left: 0; }
+
+        #feather-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; display: none; }
+        .feather { position: absolute; width: 20px; height: 40px; background: black; border-radius: 50% 0 50% 0; opacity: 0; animation: featherFall 2s linear forwards; }
+        @keyframes featherFall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(110vh) translateX(50px) rotate(360deg); opacity: 0; } }
+
+        /* ==================== MAIN CONTENT ==================== */
+        .main-container { width: 100%; min-height: 100vh; background: #fff; background-image: radial-gradient(#ccc 1px, transparent 1px); background-size: 20px 20px; opacity: 0; transition: opacity 1s 0.5s; display: flex; flex-direction: column; display: none;}
+        .main-container.active { opacity: 1; display: flex; }
+
+        header { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #000; background: #fff; position: sticky; top: 0; z-index: 50; }
+        .logo-area { font-family: var(--font-display); font-weight: 900; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        .logo-box { width: 40px; height: 40px; background: var(--theme-color); color: #fff; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; transform: skewX(-10deg); transition: background 0.3s;}
+        .nav-menu { display: flex; gap: 30px; }
+        .nav-item { font-family: var(--font-display); font-weight: bold; cursor: pointer; text-transform: uppercase; position: relative; color: #999; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { color: #000; }
+        .nav-item.active::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 3px; background: var(--theme-color); }
+
+        .content-section { display: none; padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; animation: slideUpFade 0.6s ease forwards; }
+        .content-section.active { display: block; }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- School Banner --- */
+        .school-tabs { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px; padding-bottom: 10px; }
+        .school-btn { padding: 8px 20px; border: 2px solid #000; background: #fff; font-weight: bold; cursor: pointer; transition: 0.2s; white-space: nowrap; font-family: var(--font-main); transform: skewX(-10deg); color: #333; }
+        .school-btn:hover, .school-btn.active { background: #000; color: #fff; box-shadow: 5px 5px 0 var(--theme-color); border-color: #000; }
+
+        .school-info-card { display: none; background-color: var(--theme-color); color: #fff; padding: 40px 60px; margin-bottom: 40px; position: relative; overflow: hidden; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.3); border-radius: 5px; transform-origin: 50% 0%; transform: skewX(-10deg); animation: flagSway 3s ease-in-out infinite alternate, bannerFadeIn 0.5s ease-out forwards; }
+        .school-info-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 300%; height: 100%; background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.4) 20%, transparent 40%, rgba(0, 0, 0, 0.3) 60%, transparent 80%); pointer-events: none; z-index: 0; mix-blend-mode: soft-light; animation: flagRippleFlow 2s linear infinite; }
+        .pin { position: absolute; width: 15px; height: 15px; background: radial-gradient(circle at 30% 30%, #fff, #999); border-radius: 50%; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); z-index: 10; }
+        .pin-tl { top: 10px; left: 10px; } .pin-tr { top: 10px; right: 10px; } .pin-bl { bottom: 10px; left: 10px; } .pin-br { bottom: 10px; right: 10px; }
+        
+        .school-info-content { position: relative; z-index: 1; transform: skewX(10deg); display: flex; justify-content: center; align-items: center; width: 100%; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .school-motto { font-family: 'Shippori Mincho', serif; font-size: 4rem; font-weight: 900; }
+        .school-logo-watermark { position: absolute; right: -20px; bottom: -30px; font-size: 8rem; font-family: var(--font-display); font-weight: 900; color: rgba(255, 255, 255, 0.2); transform: rotate(-15deg); z-index: 0; pointer-events: none; border: 5px solid rgba(255,255,255,0.2); border-radius: 50%; width: 200px; height: 200px; display: flex; justify-content: center; align-items: center; }
+
+        @keyframes flagSway { 0% { transform: skewX(-10deg) rotate(0deg); } 100% { transform: skewX(-12deg) rotate(1deg) translateY(5px); } }
+        @keyframes bannerFadeIn { from { opacity: 0; transform: skewX(-10deg) translateY(20px); } to { opacity: 1; transform: skewX(-10deg) translateY(0); } }
+        @keyframes flagRippleFlow { 0% { transform: translateX(0); } 100% { transform: translateX(50%); } }
+
+        /* ==================== ROSTER GRID & DETAIL (RICH VERSION) ==================== */
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px; }
+        .player-card { background: #fff; border: 3px solid #000; height: 320px; position: relative; transition: 0.3s; cursor: pointer; overflow: hidden; box-shadow: 10px 10px 0 rgba(0,0,0,0.1); }
+        .player-card:hover { transform: translate(-5px, -5px); box-shadow: 15px 15px 0 var(--theme-color); }
+        .pc-img { width: 100%; height: 75%; object-fit: cover; transition: 0.5s; object-position: top; }
+        .manga-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 75%; background: radial-gradient(circle, transparent 50%, #000 150%); opacity: 0; transition: 0.3s; pointer-events: none; mix-blend-mode: multiply; }
+        .player-card:hover .pc-img { filter: contrast(1.1); transform: scale(1.1); }
+        .player-card:hover .manga-overlay { opacity: 0.4; }
+        .pc-info { padding: 10px 15px; position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; border-top: 3px solid #000; height: 25%; }
+        .pc-num { position: absolute; top: -50px; right: 10px; font-size: 5rem; font-family: var(--font-display); font-weight: 900; color: transparent; -webkit-text-stroke: 2px #fff; z-index: 5; text-shadow: 2px 2px 0 #000; }
+        .pc-name { font-weight: 900; font-size: 1.1rem; text-transform: uppercase; margin-bottom: 5px; }
+        .pc-pos { font-size: 0.8rem; background: #000; color: #fff; padding: 2px 5px; display: inline-block; transform: skewX(-10deg); }
+
+        /* --- New Detail View Styles (豐富版詳細頁面) --- */
+        #roster-detail-view { display: none; background: #fff; border: 4px solid #000; padding: 40px; box-shadow: 20px 20px 0 #000; position: relative; animation: fadeIn 0.5s ease; max-width: 1200px; margin: 0 auto; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .back-btn { display: inline-block; margin-bottom: 20px; padding: 10px 30px; border: 2px solid #000; background: var(--theme-color); color: #fff; font-family: var(--font-display); font-weight: 900; cursor: pointer; transform: skewX(-10deg); box-shadow: 4px 4px 0 #000; transition: 0.2s; }
+        .back-btn:hover { transform: skewX(-10deg) translate(-2px, -2px); box-shadow: 6px 6px 0 #000; background: #000; }
+        
+        .detail-layout { display: flex; gap: 40px; flex-wrap: wrap; }
+        
+        /* 左側圖片區 */
+        .detail-img-box { flex: 1; min-width: 300px; height: auto; border: 3px solid #000; overflow: hidden; position: relative; display: flex; align-items: flex-start; background: #eee; }
+        .detail-img-box img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+        /* 右側資訊區 */
+        .detail-info-box { flex: 2; min-width: 300px; position: relative; display: flex; flex-direction: column; gap: 20px; }
+        
+        .detail-header { position: relative; border-bottom: 4px solid #000; padding-bottom: 20px; margin-bottom: 10px; }
+        .detail-bg-name { position: absolute; top: -50px; left: 0; font-size: 8rem; font-family: var(--font-display); font-weight: 900; color: rgba(0,0,0,0.05); z-index: 0; pointer-events: none; line-height: 1; white-space: nowrap; }
+        .detail-title { font-size: 3.5rem; font-family: var(--font-display); text-transform: uppercase; color: var(--theme-color); position: relative; z-index: 1; margin: 0; text-shadow: 3px 3px 0 #000; line-height: 1; }
+        
+        .detail-meta-row { display: flex; gap: 15px; flex-wrap: wrap; position: relative; z-index: 1; margin-top: 10px; }
+        .meta-tag { background: #000; color: #fff; padding: 5px 15px; font-weight: bold; transform: skewX(-10deg); font-size: 1rem; border: 2px solid #000; }
+        .meta-tag.outline { background: #fff; color: #000; }
+
+        /* 名言區塊 */
+        .quote-box {
+            font-family: 'Shippori Mincho', serif; font-size: 1.5rem; font-weight: 900; color: #333;
+            border-left: 8px solid var(--theme-color); padding: 15px 20px; background: #f9f9f9;
+            font-style: italic; margin-bottom: 10px;
+        }
+
+        /* 兩欄佈局：介紹文 & 數值 */
+        .info-columns { display: flex; gap: 30px; flex-wrap: wrap; }
+        .info-col-text { flex: 1.5; min-width: 300px; }
+        .info-col-stats { flex: 1; min-width: 250px; background: #222; color: #fff; padding: 20px; border-radius: 5px; box-shadow: 5px 5px 0 rgba(0,0,0,0.3); }
+
+        .detail-desc { font-size: 1.1rem; line-height: 1.8; color: #333; margin-bottom: 20px; text-align: justify; }
+        
+        /* 額外資料 (食物/煩惱) */
+        .extra-data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #eee; padding: 15px; border: 2px solid #ccc; margin-top: 20px; }
+        .extra-item strong { display: block; font-size: 0.8rem; color: #666; text-transform: uppercase; margin-bottom: 3px; }
+        .extra-item span { font-weight: bold; font-size: 1.1rem; }
+
+        /* 能力條樣式 */
+        .stat-header { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 15px; border-bottom: 2px solid var(--theme-color); padding-bottom: 5px; color: var(--theme-color); }
+        .stat-row { display: flex; align-items: center; margin-bottom: 12px; font-size: 0.9rem; }
+        .stat-label { width: 60px; font-weight: bold; color: #aaa; }
+        .stat-bar-bg { flex: 1; height: 10px; background: #444; border-radius: 5px; overflow: hidden; position: relative; }
+        .stat-bar-fill { height: 100%; background: var(--theme-color); width: 0%; transition: width 1s ease-out; position: relative; }
+        .stat-val { width: 30px; text-align: right; font-weight: bold; color: #fff; margin-left: 10px; }
+
+
+        /* ==================== 2D TACTICAL BOARD ==================== */
+        .classroom-container { 
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            padding-top: 20px; gap: 40px;
+        }
+        
+        .court-2d-wrapper {
+            width: 100%; max-width: 800px; aspect-ratio: 1.8; 
+            background: #e67e22; border: 12px solid #fff;
+            position: relative; 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            background-image: repeating-linear-gradient(90deg, transparent 0, transparent 40px, rgba(0,0,0,0.03) 40px, rgba(0,0,0,0.03) 42px);
+        }
+
+        .court-row-divider {
+            position: absolute; top: 50%; left: 0; width: 100%; height: 4px;
+            background: #fff; z-index: 5; pointer-events: none;
+        }
+
+        .court-zone {
+            position: relative; border: 1px dashed rgba(255,255,255,0.3);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer; transition: 0.2s;
+        }
+        .court-zone:hover { background: rgba(255,255,255,0.2); }
+        .court-zone.active { background: var(--theme-color); color: #fff; border: 2px solid #fff; box-shadow: inset 0 0 20px rgba(0,0,0,0.2); }
+        
+        .zone-label { font-family: var(--font-display); font-size: 3rem; font-weight: 900; opacity: 1; text-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
+        .zone-name { font-size: 0.8rem; font-weight: bold; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; color: #fff; }
+
+        .net-visual {
+            width: 100%; height: 20px; background: 
+                repeating-linear-gradient(45deg, #333 0, #333 1px, transparent 1px, transparent 5px),
+                repeating-linear-gradient(-45deg, #333 0, #333 1px, transparent 1px, transparent 5px);
+            background-color: rgba(255,255,255,0.8);
+            border: 2px solid #000; margin-bottom: -12px; position: relative; z-index: 10;
+            max-width: 824px;
+        }
+
+        .pos-info-wrapper {
+            width: 100%; max-width: 800px;
+            background: #222; color: #fff; border: 4px solid var(--theme-color);
+            padding: 30px; position: relative; box-shadow: 10px 10px 0 #000;
+            display: flex; gap: 30px; align-items: center; z-index: 5;
+        }
+        .pos-info-wrapper::before {
+            content: 'TACTICAL BOARD'; position: absolute; top: -15px; left: 20px;
+            background: var(--theme-color); color: #000; padding: 2px 10px; font-weight: bold; font-family: var(--font-display);
+        }
+
+        .pos-icon-large {
+            font-family: var(--font-display); font-size: 5rem; font-weight: 900; color: #333;
+            -webkit-text-stroke: 2px var(--theme-color); width: 120px; text-align: center;
+        }
+        .pos-content { flex: 1; }
+        .pos-title { font-size: 2rem; font-family: var(--font-display); color: var(--theme-color); margin-bottom: 5px; text-transform: uppercase; }
+        .pos-fullname { font-size: 1.1rem; border-bottom: 1px solid #555; display: inline-block; margin-bottom: 10px; padding-bottom: 5px; color: #aaa; }
+        .pos-desc { font-size: 1rem; line-height: 1.6; color: #ddd; }
+
+
+        /* ==================== ANIME GALLERY ==================== */
+        .anime-gallery {
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            perspective: 1000px; padding: 50px 0; overflow-x: auto;
+        }
+
+        .anime-card {
+            width: 100px; height: 450px; background-size: cover; background-position: center;
+            position: relative; transition: width 0.5s ease, transform 0.3s ease, filter 0.3s;
+            cursor: pointer; border: 2px solid #000; overflow: hidden;
+            transform: skewX(-5deg);
+        }
+
+        .anime-card:hover {
+            width: 400px; transform: skewX(-5deg) scale(1.05);
+            z-index: 10; box-shadow: 10px 10px 20px rgba(0,0,0,0.5);
+        }
+
+        /* Update State Styles */
+        .anime-card.locked {
+            border: 2px dashed #666; background: #222;
+        }
+        .anime-card.locked .anime-card-content {
+            opacity: 1; background: none;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            height: 100%; transform: none; bottom: auto; top: 0;
+        }
+        .update-icon {
+            font-size: 4rem; color: var(--theme-color); margin-bottom: 10px;
+            animation: spin 3s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .anime-card-content {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 20px; opacity: 0; transition: 0.3s 0.2s; transform: skewX(5deg);
+        }
+        .anime-card:hover .anime-card-content { opacity: 1; }
+
+        .ac-season { font-family: var(--font-display); font-size: 3rem; color: var(--theme-color); line-height: 1; margin-bottom: 5px; }
+        .ac-title { font-size: 1.2rem; font-weight: bold; color: #fff; margin-bottom: 10px; }
+        .ac-quote { font-family: 'Shippori Mincho', serif; font-size: 1rem; color: #ccc; font-style: italic; }
+
+        /* Song Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center;
+            z-index: 2000; backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; }
+        .modal-content {
+            background: #222; border: 2px solid var(--theme-color); padding: 30px;
+            border-radius: 15px; max-width: 600px; width: 90%; position: relative;
+            text-align: left; box-shadow: 0 0 30px rgba(249, 145, 50, 0.3);
+            max-height: 85vh; overflow-y: auto; transform: scale(0.9); transition: transform 0.3s;
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-close {
+            position: absolute; top: 15px; right: 20px; font-size: 2rem; color: #666;
+            cursor: pointer; line-height: 1; transition: 0.2s;
+        }
+        .modal-close:hover { color: white; }
+
+        .season-title { color: var(--theme-color); border-bottom: 1px solid #444; padding-bottom: 5px; margin-top: 25px; margin-bottom: 15px; font-size: 1.2rem; }
+        .song-item {
+            display: flex; align-items: center; margin-bottom: 12px; padding: 12px;
+            background: #2a2a2a; border-radius: 8px; transition: 0.2s; border-left: 4px solid transparent;
+        }
+        .song-item:hover { background: #333; border-left: 4px solid var(--theme-color); transform: translateX(5px); }
+        .song-tag { font-size: 0.75rem; font-weight: bold; padding: 3px 8px; border-radius: 4px; margin-right: 15px; min-width: 40px; text-align: center; }
+        .tag-op { background-color: var(--theme-color); color: black; }
+        .tag-ed { background-color: var(--accent-blue); color: white; }
+        .tag-mv { background-color: #e74c3c; color: white; }
+        .song-details { display: flex; flex-direction: column; }
+        .song-name { font-weight: bold; font-size: 1rem; color: #fff; margin-bottom: 3px;}
+        .song-artist { font-size: 0.85rem; color: #aaa; }
+
+
+        /* ==================== GAME & STORY ==================== */
+        .game-wrapper {
+            background: #fff; border: 4px solid #000; padding: 20px;
+            box-shadow: 15px 15px 0 #000; max-width: 800px; margin: 0 auto; text-align: center;
+            position: relative; overflow: hidden;
+        }
+        
+        .game-header { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 20px; color: var(--theme-color); font-weight: 900; text-transform: uppercase; }
+
+        /* Game Difficulty Selection */
+        .difficulty-select { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
+        .diff-btn {
+            padding: 8px 15px; border: 2px solid #000; background: #eee; font-weight: bold; cursor: pointer;
+            font-family: var(--font-display); text-transform: uppercase; transform: skewX(-10deg); transition: 0.2s;
+        }
+        .diff-btn:hover, .diff-btn.active { background: #000; color: #fff; border-color: #000; }
+        .diff-btn.active[data-level="easy"] { border-bottom: 4px solid #2ecc71; }
+        .diff-btn.active[data-level="normal"] { border-bottom: 4px solid #f1c40f; }
+        .diff-btn.active[data-level="hard"] { border-bottom: 4px solid #e74c3c; }
+
+        .game-screen {
+            height: 300px; background: #333; position: relative; overflow: hidden;
+            border-bottom: 4px solid #000; margin-bottom: 20px;
+            background: repeating-linear-gradient(45deg, #f0f0f0, #f0f0f0 10px, #e0e0e0 10px, #e0e0e0 20px);
+        }
+        
+        .power-bar-container {
+            width: 80%; height: 50px; background: #333; border: 4px solid #000; margin: 0 auto;
+            position: relative; border-radius: 25px; overflow: hidden; box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
+        }
+        .pb-zone { height: 100%; position: absolute; top: 0; transition: all 0.3s; }
+        .pb-gray { width: 100%; background: #95a5a6; left: 0; }
+        .pb-yellow { width: 60%; background: #f1c40f; left: 20%; }
+        /* Red zone will be dynamic via JS */
+        .pb-red { background: #e74c3c; box-shadow: 0 0 10px #fff inset; } 
+        
+        .pb-cursor {
+            position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: #fff; border: 1px solid #000;
+            z-index: 10; box-shadow: 0 0 5px #000;
+        }
+
+        .serve-char {
+            width: 80px; height: 120px; background: #000; position: absolute; left: 10%; bottom: 0;
+            transition: 0.2s;
+        }
+        .serve-char.jump { transform: translateY(-100px); }
+        .serve-ball {
+            width: 30px; height: 30px; background: radial-gradient(circle at 30% 30%, #fff, var(--theme-color));
+            border: 2px solid #000; border-radius: 50%; position: absolute; left: 12%; bottom: 60px;
+            transition: 0.1s; z-index: 5;
+        }
+
+        .game-msg {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-family: var(--font-display); font-size: 4rem; font-weight: 900;
+            text-shadow: 3px 3px 0 #fff, 5px 5px 0 #000; opacity: 0; pointer-events: none; z-index: 20;
+            white-space: nowrap; transition: 0.2s;
+        }
+        .game-msg.show { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+
+        .action-btn { font-family: var(--font-display); font-size: 2rem; padding: 10px 50px; background: var(--theme-color); color: #fff; border: none; font-weight: 900; cursor: pointer; transform: skewX(-10deg); box-shadow: 5px 5px 0 #000; transition: 0.1s; }
+        .action-btn:active { transform: skewX(-10deg) translate(3px, 3px); box-shadow: 2px 2px 0 #000; }
+        .action-btn:disabled { background: #555; cursor: not-allowed; }
+
+        .story-text { margin-top: 30px; }
+        .story-text p { font-size: 1.15rem; line-height: 2; margin-bottom: 25px; max-width: 900px; text-align: justify; }
+        .story-highlight { font-weight: 900; font-size: 1.3rem; background: linear-gradient(to top, rgba(249, 145, 50, 0.4) 50%, transparent 50%); padding: 0 5px; }
+        .story-chapter { font-size: 1.5rem; font-weight: bold; color: var(--theme-color); margin-top: 40px; margin-bottom: 15px; font-family: var(--font-display); border-left: 5px solid #000; padding-left: 15px; }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 15vw; }
+            .marquee-row { font-size: 6vh; }
+            header { padding: 15px; flex-direction: column; gap: 15px; }
+            .nav-menu { gap: 15px; font-size: 0.9rem; flex-wrap: wrap; justify-content: center; }
+            .pc-num { font-size: 4rem; }
+            .detail-layout { flex-direction: column; }
+            .detail-img-box { height: 300px; }
+            .school-info-content { flex-direction: column; gap: 20px; }
+            .school-motto { font-size: 2.5rem; }
+            .school-info-card { padding: 20px; }
+            .classroom-container { gap: 20px; perspective: none; }
+            .court-2d-wrapper { aspect-ratio: auto; height: 400px; }
+            .pos-info-wrapper { flex-direction: column; text-align: center; }
+            .pos-icon-large { font-size: 4rem; width: auto; margin-bottom: 10px; }
+            .anime-gallery { flex-direction: column; height: auto; padding: 20px; overflow: visible; }
+            .anime-card { width: 100%; height: 150px; transform: none; margin-bottom: 10px; }
+            .anime-card:hover { width: 100%; transform: scale(1.02); height: 200px; }
+            .anime-card-content { transform: none; }
+            
+            /* Detail View Mobile */
+            .detail-title { font-size: 2.5rem; }
+            .info-columns { flex-direction: column; }
+            .detail-bg-name { font-size: 4rem; top: 0; }
+        }
+    </style>
+</head>
 <body>
-    AA
+
+    <section class="hero-section" id="hero">
+        <div class="marquee-bg">
+            <div class="marquee-row scroll-left">
+                <div class="marquee-content"><span>烏野 音駒 青葉城西 白鳥沢 梟谷 稲荷崎 鴎台 伊達工</span></div>
+                <div class="marquee-content"><span>烏野 音駒 青葉城西 白鳥沢 梟谷 稲荷崎 鴎台 伊達工</span></div>
+            </div>
+            <div class="marquee-row scroll-right">
+                <div class="marquee-content"><span>飛べ 繋げ コートを制す 一球入魂 強者であれ 伊達の鉄壁</span></div>
+                <div class="marquee-content"><span>飛べ 繋げ コートを制す 一球入魂 強者であれ 伊達の鉄壁</span></div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-jp">ハイキュー!!</div>
+            <h1 class="hero-title">HAIKYUU!!</h1>
+            <button class="enter-btn" onclick="enterSite()">Start Match</button>
+        </div>
+        <div id="feather-container"></div>
+    </section>
+
+    <div class="main-container" id="mainApp">
+        <header>
+            <div class="logo-area">
+                <div class="logo-box">HQ</div>
+                <span>排球少年!!</span>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-item active" onclick="switchTab('roster', this)">球員名冊</div>
+                <div class="nav-item" onclick="switchTab('positions', this)">排球教室</div>
+                <div class="nav-item" onclick="switchTab('anime', this)">動畫軌跡</div>
+                <div class="nav-item" onclick="switchTab('story', this)">故事大綱</div>
+                <div class="nav-item" onclick="switchTab('game', this)">發球特訓</div>
+            </nav>
+        </header>
+
+        <section id="tab-roster" class="content-section active">
+            <div id="roster-list-view">
+                <div class="school-tabs">
+                    <button class="school-btn active" onclick="filterTeam('all', this, '#F99132')">全部</button>
+                    <button class="school-btn" onclick="filterTeam('karasuno', this, '#F99132')">烏野</button>
+                    <button class="school-btn" onclick="filterTeam('nekoma', this, '#D4202A')">音駒</button>
+                    <button class="school-btn" onclick="filterTeam('seijoh', this, '#58C6B3')">青城</button>
+                    <button class="school-btn" onclick="filterTeam('fukurodani', this, '#CEB960')">梟谷</button>
+                    <button class="school-btn" onclick="filterTeam('shiratorizawa', this, '#8E44AD')">白鳥澤</button>
+                    <button class="school-btn" onclick="filterTeam('inarizaki', this, '#800000')">稻荷崎</button>
+                    <button class="school-btn" onclick="filterTeam('dateko', this, '#2E8B57')">伊達工</button>
+                    <button class="school-btn" onclick="filterTeam('kamomedai', this, '#5BC0DE')">鷗台</button>
+                </div>
+
+                <div class="school-info-card" id="schoolInfoCard">
+                    <div class="pin pin-tl"></div><div class="pin pin-tr"></div>
+                    <div class="pin pin-bl"></div><div class="pin pin-br"></div>
+                    <div class="school-logo-watermark" id="schoolLogo">烏</div>
+                    <div class="school-info-content">
+                        <div class="school-motto" id="schoolMotto">飛べ</div>
+                    </div>
+                </div>
+
+                <div class="roster-grid" id="rosterGrid"></div>
+            </div>
+
+            <div id="roster-detail-view">
+                <button class="back-btn" onclick="backToRoster()">← BACK TO LIST</button>
+                
+                <div class="detail-layout">
+                    <div class="detail-img-box">
+                        <img id="detailImg" src="" alt="Player Image">
+                    </div>
+                    
+                    <div class="detail-info-box">
+                        <div class="detail-header">
+                            <div class="detail-bg-name" id="detailBgName">NAME</div>
+                            <h2 class="detail-title" id="detailName">Player Name</h2>
+                            <div class="detail-meta-row">
+                                <span class="meta-tag" id="detailTeam">TEAM</span>
+                                <span class="meta-tag outline" id="detailNum">#00</span>
+                                <span class="meta-tag outline" id="detailPos">POS</span>
+                                <span class="meta-tag" id="detailHeight">0cm</span>
+                            </div>
+                        </div>
+
+                        <div class="quote-box" id="detailQuote">
+                            "Quotes go here."
+                        </div>
+
+                        <div class="info-columns">
+                            <div class="info-col-text">
+                                <div class="detail-desc" id="detailDesc">Description text...</div>
+                                
+                                <div class="extra-data-grid">
+                                    <div class="extra-item">
+                                        <strong>Birthday</strong>
+                                        <span id="detailBirthday">Unknown</span>
+                                    </div>
+                                    <div class="extra-item">
+                                        <strong>Favorite Food</strong>
+                                        <span id="detailFood">Unknown</span>
+                                    </div>
+                                    <div class="extra-item" style="grid-column: span 2;">
+                                        <strong>Current Concern</strong>
+                                        <span id="detailConcern">Unknown</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-col-stats">
+                                <div class="stat-header">ABILITY PARAMETER</div>
+                                <div id="statContainer">
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-positions" class="content-section">
+            <h2 style="font-family: var(--font-display); font-size: 3rem; margin-bottom: 20px; text-align: center;">排球教室</h2>
+            <p style="margin-bottom: 30px; text-align: center;">點擊球場上的 6 個位置代號 (WS, MB, S...) 了解職責。</p>
+            
+            <div class="classroom-container">
+                <div class="net-visual"></div>
+                <div class="court-2d-wrapper">
+                    <div class="court-row-divider"></div>
+                    
+                    <div class="court-zone" onclick="showPosInfo('WS-F', this)">
+                        <div class="zone-label">WS</div>
+                        <div class="zone-name">前排左</div>
+                    </div>
+                    <div class="court-zone" onclick="showPosInfo('MB', this)">
+                        <div class="zone-label">MB</div>
+                        <div class="zone-name">前排中</div>
+                    </div>
+                    <div class="court-zone" onclick="showPosInfo('S-OP', this)">
+                        <div class="zone-label">S</div>
+                        <div class="zone-name">前排右</div>
+                    </div>
+
+                    <div class="court-zone" onclick="showPosInfo('WS-B', this)">
+                        <div class="zone-label">WS</div>
+                        <div class="zone-name">後排左</div>
+                    </div>
+                    <div class="court-zone" onclick="showPosInfo('Li', this)">
+                        <div class="zone-label" style="color:#f1c40f;">Li</div>
+                        <div class="zone-name">後排中</div>
+                    </div>
+                    <div class="court-zone" onclick="showPosInfo('OP-S', this)">
+                        <div class="zone-label">OP</div>
+                        <div class="zone-name">後排右 (發球)</div>
+                    </div>
+                </div>
+
+                <div class="pos-info-wrapper">
+                    <div class="pos-icon-large" id="posIcon">HQ</div>
+                    <div class="pos-content">
+                        <h3 class="pos-title" id="posTitle">TACTICAL BOARD</h3>
+                        <div class="pos-fullname" id="posFullname">請選擇一個位置</div>
+                        <div class="pos-desc" id="posDesc">
+                            排球場分為前排與後排，球員需依照順時針方向輪轉發球。
+                            前排負責進攻與攔網，後排負責接發球與防守。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-anime" class="content-section">
+            <h2 style="font-family: var(--font-display); font-size: 3rem; margin-bottom: 20px;">ANIMATION HISTORY</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <p>滑動卡片查看排球少年的動畫軌跡。</p>
+                <button class="action-btn" onclick="openSongs()" style="font-size:1rem; padding:10px 20px;">🎵 查看歷代神曲</button>
+            </div>
+
+            <div class="anime-gallery">
+                <div class="anime-card" style="background-image: url('images/anime/s1.jpg');">
+                    <div class="anime-card-content">
+                        <div class="ac-season">S1</div>
+                        <div class="ac-title">排球少年!! 第一季</div>
+                        <div class="ac-quote">「飛吧！展現給世界看！」</div>
+                        <p style="color:#ddd; margin-top:5px; font-size:0.9rem;">日向與影山的相遇，怪人快攻的誕生，以及烏野的復活之路。</p>
+                    </div>
+                </div>
+
+                <div class="anime-card" style="background-image: url('images/anime/ova1.jpg');">
+                    <div class="anime-card-content">
+                        <div class="ac-season">OVA</div>
+                        <div class="ac-title">列夫參見！</div>
+                        <div class="ac-quote">「我是音駒的王牌！」</div>
+                        <p style="color:#ddd; margin-top:5px; font-size:0.9rem;">音駒高中的新戰力，灰羽列夫初次登場與磨合。</p>
+                    </div>
+                </div>
+
+                <div class="anime-card" style="background-image: url('images/anime/s2.jpg');">
+                    <div class="anime-card-content">
+                        <div class="ac-season">S2</div>
+                        <div class="ac-title">排球少年!! 第二季</div>
+                        <div class="ac-quote">「才能是可以栽培開花的，球感是可以磨練的。」</div>
+                        <p style="color:#ddd; margin-top:5px; font-size:0.9rem;">東京合宿篇，面對強校的磨練，全隊進化，迎戰青葉城西。</p>
+                    </div>
+                </div>
+
+                <div class="anime-card" style="background-image: url('images/anime/ova2.jpg');">
+                    <div class="anime-card-content">
+                        <div class="ac-season">OVA</div>
+                        <div class="ac-title">VS 不及格</div>
+                        <div class="ac-quote">「去不了東京合宿！？」</div>
+                        <p style="color:#ddd; margin-top:5px; font-size:0.9rem;">日向與影山為了參加東京合宿，必須通過期末考試的考驗。</p>
+                    </div>
+                </div>
+
+                <div class="anime-card" style="background-image: url('images/anime/ova3.jpg');">
+                    <div class="anime-card-content">
+                        <div class="ac-season">OVA</div>
+                        <div class="ac-title">賭在春高排球上</div>
+                        <div class="ac-quote">「為了那唯一的門票。」</div>
+                        <p style="color:#ddd; margin-top:5px; font-size:0.9rem;">春高預選賽的幕後與訪談，各校對於全國大賽的決心。</p>
+                    </div>
+                </div>
+
+                <div class="anime-card" style="background-image: url('images/anime/s3.jpg');">
+                    <div class="anime-card-content">
+                        <div class="ac-season">S3</div>
+                        <div class="ac-title">烏野高校 VS 白鳥澤學園高校</div>
+                        <div class="ac-quote">「排球是永遠向上看的運動。」</div>
+                        <p style="color:#ddd; margin-top:5px; font-size:0.9rem;">挑戰縣內王者牛島若利，通往全國大賽的最後一戰。</p>
+                    </div>
+                </div>
+
+                <div class="anime-card" style="background-image: url('images/anime/ova4.jpg');">
+                    <div class="anime-card-content">
+                        <div class="ac-season">OVA</div>
+                        <div class="ac-title">陸 VS 空 / 球之道</div>
+                        <div class="ac-quote">「主將的責任，就是背負隊伍的勝負。」</div>
+                        <p style="color:#ddd; margin-top:5px; font-size:0.9rem;">東京代表決定戰，音駒、梟谷、戶美學園的激鬥。</p>
+                    </div>
+                </div>
+
+                <div class="anime-card" style="background-image: url('images/anime/s4.jpg');">
+                    <div class="anime-card-content">
+                        <div class="ac-season">S4</div>
+                        <div class="ac-title">TO THE TOP</div>
+                        <div class="ac-quote">「昨天已經結束了，今天也要繼續什麼呢？」</div>
+                        <p style="color:#ddd; margin-top:5px; font-size:0.9rem;">全國大賽篇，面對稻荷崎宮氏兄弟與鷗台的小巨人。</p>
+                    </div>
+                </div>
+
+                <div class="anime-card" style="background-image: url('images/anime/movie.jpg'); border-color: #F99132;">
+                    <div class="anime-card-content">
+                        <div class="ac-season">MOVIE</div>
+                        <div class="ac-title">垃圾場的決戰</div>
+                        <div class="ac-quote">「好想再打一場不可能實現的比賽。」</div>
+                        <p style="color:#ddd; margin-top:5px; font-size:0.9rem;">烏野與音駒宿命的對決，沒有「再來一次」的比賽。</p>
+                    </div>
+                </div>
+
+                <div class="anime-card locked">
+                    <div class="anime-card-content">
+                        <div class="update-icon">↻</div>
+                        <div class="ac-season" style="font-size: 2rem;">To Be Continued</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="tab-story" class="content-section">
+            <h2 style="font-family: var(--font-display); font-size: 3rem; margin-bottom: 20px;">STORY</h2>
+            <div class="story-text">
+                <div class="story-chapter">01. 命中註定的相遇</div>
+                <p>
+                    故事始於宮城縣的一名少年日向翔陽。小學時，他在電視上看見了春高排球的轉播，被一名身高矮小卻能在巨人叢林中飛翔的烏野高中王牌——<span class="story-highlight">「小巨人」</span>的身姿深深吸引。從那一刻起，日向便立志要成為下一個小巨人，即使自己的身高也不佔優勢，但他擁有著驚人的跳躍力與對勝利的渴望。
+                </p>
+                <p>
+                    初中三年級，日向終於湊齊人數參加了唯一的正式比賽，卻在第一場就遭遇了強豪北川第一中學，並慘敗給了被稱為<span class="story-highlight">「球場上的王者」</span>的天才舉球員影山飛雄。日向發誓要打倒影山，考入了夢想中的烏野高中，卻驚訝地發現，昔日的宿敵影山竟然也考進了同一所學校！
+                </p>
+
+                <div class="story-chapter">02. 沒落的強豪：飛吧！</div>
+                <p>
+                    現在的烏野高中被稱為「沒落的強豪，飛不起來的烏鴉」。日向與影山這對水火不容的搭檔，在磨合中創造出了獨一無二的武器——<span class="story-highlight">「怪人快攻」</span>。影山以精準無比的托球，配合日向全速的跑動與跳躍，讓對手的攔網完全跟不上反應。加上隊長澤村大地、王牌東峰旭、守護神西谷夕等可靠的隊友，烏野重新開始振翅高飛。
+                </p>
+
+                <div class="story-chapter">03. 宿命的對決與全國之路</div>
+                <p>
+                    經歷了對戰青葉城西的敗北與東京合宿的嚴苛修練，烏野全體成員不僅磨練了個人技術，更強化了團隊的連動。在春高預選賽中，他們接連擊敗強敵，最終在決賽面對擁有「絕對王者」牛島若利的白鳥澤學園。這不僅是技術的對決，更是<span class="story-highlight">「概念的戰鬥」</span>。最終，烏野打破了白鳥澤的統治，成功奪下通往全國大賽的門票。
+                </p>
+                
+                <hr style="border: 2px solid #000; margin: 50px 0;">
+                
+                <p style="font-family: 'Shippori Mincho'; font-size: 1.8rem; text-align: center; font-weight: 900;">
+                    「排球這項運動，是除了發球之外，球都不能落地的運動。<br>
+                    也是永遠只能向上看的運動。」
+                </p>
+            </div>
+        </section>
+
+        <section id="tab-game" class="content-section">
+            <div class="game-wrapper">
+                <div class="game-header">Serve Practice</div>
+                
+                <div class="difficulty-select">
+                    <button class="diff-btn" data-level="easy" onclick="setDifficulty('easy')">練習賽 (Easy)</button>
+                    <button class="diff-btn active" data-level="normal" onclick="setDifficulty('normal')">IH 預選 (Normal)</button>
+                    <button class="diff-btn" data-level="hard" onclick="setDifficulty('hard')">全國大賽 (Hard)</button>
+                </div>
+
+                <div class="game-screen">
+                    <div class="game-msg" id="gameMsg">NICE SERVE!</div>
+                    <div class="serve-char" id="serveChar"></div>
+                    <div class="serve-ball" id="serveBall"></div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <p style="font-weight: bold; margin-bottom: 5px;">點擊按鈕，讓白色游標停在 <span style="color: #e74c3c;">紅色區域</span>！</p>
+                    <div class="power-bar-container">
+                        <div class="pb-zone pb-gray"></div>
+                        <div class="pb-zone pb-yellow"></div>
+                        <div class="pb-zone pb-red" id="pbRed"></div>
+                        <div class="pb-cursor" id="cursor"></div>
+                    </div>
+                </div>
+
+                <button class="action-btn" id="actionBtn">START</button>
+                <div style="margin-top: 20px; font-weight: bold; font-size: 1.2rem;">
+                    SCORE: <span id="scoreVal">0</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="songModal" class="modal-overlay" onclick="closeModal('songModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeModal('songModal')">&times;</span>
+            <h2 style="text-align:center; color:white; margin-bottom:10px;">排球少年!! 歷代主題曲</h2>
+            <p style="text-align:center; color:#666; font-size:0.9rem; margin-bottom:20px;">那些讓人熱血沸騰的旋律</p>
+            
+            <div class="song-list-container">
+                <h3 class="season-title">Season 1</h3>
+                <div class="song-item"><span class="song-tag tag-op">OP1</span><div class="song-details"><span class="song-name">Imagination</span><span class="song-artist">SPYAIR</span></div></div>
+                <div class="song-item"><span class="song-tag tag-ed">ED1</span><div class="song-details"><span class="song-name">天地返</span><span class="song-artist">NICO Touches the Walls</span></div></div>
+                <div class="song-item"><span class="song-tag tag-op">OP2</span><div class="song-details"><span class="song-name">Ah Yeah!!</span><span class="song-artist">Sukima Switch</span></div></div>
+                <div class="song-item"><span class="song-tag tag-ed">ED2</span><div class="song-details"><span class="song-name">LEO</span><span class="song-artist">tacica</span></div></div>
+                
+                <h3 class="season-title">Season 2</h3>
+                <div class="song-item"><span class="song-tag tag-op">OP1</span><div class="song-details"><span class="song-name">I'm a Believer</span><span class="song-artist">SPYAIR</span></div></div>
+                <div class="song-item"><span class="song-tag tag-ed">ED1</span><div class="song-details"><span class="song-name">Climber</span><span class="song-artist">Galileo Galilei</span></div></div>
+                <div class="song-item"><span class="song-tag tag-op">OP2</span><div class="song-details"><span class="song-name">FLY HIGH!!</span><span class="song-artist">BURNOUT SYNDROMES</span></div></div>
+                <div class="song-item"><span class="song-tag tag-ed">ED2</span><div class="song-details"><span class="song-name">發熱 (Hatsunetsu)</span><span class="song-artist">tacica</span></div></div>
+                
+                <h3 class="season-title">Season 3</h3>
+                <div class="song-item"><span class="song-tag tag-op">OP1</span><div class="song-details"><span class="song-name">Hikari Are</span><span class="song-artist">BURNOUT SYNDROMES</span></div></div>
+                <div class="song-item"><span class="song-tag tag-ed">ED1</span><div class="song-details"><span class="song-name">Mashi Mashi</span><span class="song-artist">NICO Touches the Walls</span></div></div>
+                
+                <h3 class="season-title">Season 4</h3>
+                <div class="song-item"><span class="song-tag tag-op">OP1</span><div class="song-details"><span class="song-name">PHOENIX</span><span class="song-artist">BURNOUT SYNDROMES</span></div></div>
+                <div class="song-item"><span class="song-tag tag-ed">ED1</span><div class="song-details"><span class="song-name">決戰 Spirit</span><span class="song-artist">CHiCO with HoneyWorks</span></div></div>
+                <div class="song-item"><span class="song-tag tag-op">OP2</span><div class="song-details"><span class="song-name">突破口</span><span class="song-artist">SUPER BEAVER</span></div></div>
+                <div class="song-item"><span class="song-tag tag-ed">ED2</span><div class="song-details"><span class="song-name">One Day</span><span class="song-artist">SPYAIR</span></div></div>
+
+                <h3 class="season-title">Movie: The Dumpster Battle</h3>
+                <div class="song-item" style="border-left: 4px solid #F99132;"><span class="song-tag tag-mv">THEME</span><div class="song-details"><span class="song-name">Orange</span><span class="song-artist">SPYAIR</span></div></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. COMPREHENSIVE CHARACTER ROSTER (RICH DETAILS VERSION) ---
+        const players = [
+            // --- KARASUNO (烏野) ---
+            { 
+                team: "karasuno", num: "01", name: "澤村 大地", pos: "WS", img: "澤村 大地.jpg", height: "176.8cm", birthday: "12月31日", 
+                food: "醬油拉麵", concern: "頻繁地被教導主任訓話",
+                quote: "「不再這時候這一步，又要等到什麼時候！」",
+                desc: "烏野高中的主將，有著「不動的基石」之稱。與其說是天才，不如說是用堅實的基礎支撐全隊的防守核心。性格穩重，是球隊的精神支柱，擅長在逆境中安撫隊員並鼓舞士氣。",
+                stats: { power: 4, jump: 3, stamina: 3, intellect: 4, technique: 4, speed: 3 }
+            },
+            { 
+                team: "karasuno", num: "02", name: "菅原 孝支", pos: "S", img: "菅原 孝支.jpg", height: "174.3cm", birthday: "6月13日", 
+                food: "超辣麻婆豆腐", concern: "很多學弟的身高都比他高",
+                quote: "「我的武器是信賴感。」",
+                desc: "烏野的副主將，性格溫和但內心堅韌。雖然正選位置被影山取代，但從未放棄，善於觀察場上局勢。上場時能用穩健的托球和笑容改變比賽節奏，被稱為「不屈的舉球員」。",
+                stats: { power: 2, jump: 2, stamina: 2, intellect: 4, technique: 4, speed: 2 }
+            },
+            { 
+                team: "karasuno", num: "03", name: "東峰 旭", pos: "WS", img: "東峰 旭.jpg", height: "184.7cm", birthday: "1月1日", 
+                food: "豚骨拉麵", concern: "即使說自己是學生，也沒人相信",
+                quote: "「不管是幾次，我都要得分！」",
+                desc: "烏野的王牌主攻手。外表粗曠留著鬍子，內心卻十分纖細容易緊張（玻璃心）。克服了過去被攔網的陰影后，現在能轟出威力強大的扣球，是烏野得分的重砲手。",
+                stats: { power: 5, jump: 3, stamina: 3, intellect: 3, technique: 3, speed: 2 }
+            },
+            { 
+                team: "karasuno", num: "04", name: "西谷 夕", pos: "Li", img: "西谷 夕.jpg", height: "159.3cm", birthday: "10月10日", 
+                food: "嘎哩嘎哩君(蘇打口味)", concern: "沒有！",
+                quote: "「背後就交給我來守護！」",
+                desc: "「烏野的守護神」。雖然身高最矮，但存在感極強。擁有天才般的反應神經和接球技術，性格熱血豪爽。當全隊陷入焦慮時，他的一個完美接球就能讓氣氛起死回生。",
+                stats: { power: 2, jump: 4, stamina: 5, intellect: 3, technique: 4, speed: 5 }
+            },
+            { 
+                team: "karasuno", num: "05", name: "田中 龍之介", pos: "WS", img: "田中 龍之介.jpg", height: "177.2cm", birthday: "3月3日", 
+                food: "菠蘿麵包", concern: "想試著叫一次迷路的女高中生「喂，那邊那位小姐」",
+                quote: "「只要平凡的我還有時間仰望星空，還不如拿來跑步。」",
+                desc: "烏野的特攻隊長，精神力極強的男人。無論被攔網多少次都不會折斷心智，在比賽膠著時往往能成為突破口。擅長大斜線扣球，是隊內氣氛的帶動者。",
+                stats: { power: 5, jump: 3, stamina: 4, intellect: 1, technique: 2, speed: 3 }
+            },
+            { 
+                team: "karasuno", num: "06", name: "緣下 力", pos: "WS", img: "緣下 力.jpg", height: "175.4cm", birthday: "12月26日", food:"海鞘醋", concern:"就算再怎麼睏，早上也會清醒過來", quote:"「我不想逃避。」", desc: "二年級的下任主將候補。曾有逃避練習的過去，回歸後變得沉穩可靠，能冷靜地統率隊伍。", stats: { power: 3, jump: 2, stamina: 3, intellect: 4, technique: 3, speed: 2 } },
+            { 
+                team: "karasuno", num: "07", name: "成田 一仁", pos: "MB", img: "成田 一仁.jpg", height: "180.2cm", birthday: "8月17日", food:"壽司(雞蛋)", concern:"大家是不是忘了我的名字", quote:"(默默耕耘)", desc: "二年級副攻手。雖然不起眼，但基礎紮實，在主力缺席時能穩定發揮。", stats: { power: 3, jump: 3, stamina: 3, intellect: 3, technique: 3, speed: 3 } },
+            { 
+                team: "karasuno", num: "08", name: "木下 久志", pos: "WS", img: "木下 久志.jpg", height: "174.7cm", birthday: "2月15日", food:"紅薑天婦羅", concern:"想變得更有威嚴", quote:"「我也想戰鬥！」", desc: "二年級生，專注磨練跳躍飄球。渴望為球隊貢獻一份力量。", stats: { power: 2, jump: 2, stamina: 2, intellect: 3, technique: 3, speed: 2 } },
+            { 
+                team: "karasuno", num: "09", name: "影山 飛雄", pos: "S", img: "影山 飛雄.jpg", height: "180.6cm", birthday: "12月22日", 
+                food: "溫泉蛋拌豬肉咖哩", concern: "覺得動物好像討厭他",
+                quote: "「留在球場上的，只有贏家以及強者。」",
+                desc: "「球場上的王者」。擁有壓倒性的排球天賦、控球能力和對勝利的執著。雖然不擅長人際交流，但與日向相遇後學會了依賴隊友，正從「獨裁的王者」進化為「新球場上的王者」。",
+                stats: { power: 4, jump: 4, stamina: 5, intellect: 5, technique: 5, speed: 4 }
+            },
+            { 
+                team: "karasuno", num: "10", name: "日向 翔陽", pos: "MB", img: "日向 翔陽.jpg", height: "162.8cm", birthday: "6月21日", 
+                food: "生蛋拌飯", concern: "單手拿不住排球",
+                quote: "「我雖然不高，但是… 我能跳！」",
+                desc: "最強的「誘餌」。雖然身高矮小技術粗糙，但擁有驚人的速度、彈跳力和體力。依靠本能和影山的托球在場上縱橫馳騁，目標是成為像「小巨人」那樣的選手。",
+                stats: { power: 1, jump: 5, stamina: 5, intellect: 1, technique: 1, speed: 5 }
+            },
+            { 
+                team: "karasuno", num: "11", name: "月島 螢", pos: "MB", img: "月島 螢.jpg", height: "188.3cm", birthday: "9月27日", 
+                food: "草莓蛋糕", concern: "雖然上了高中，但還有人一直問他的名字怎麼唸",
+                quote: "「只不過是擋下了一球，為什麼會這麼高興呢？」",
+                desc: "烏野的理智擔當。擁有全隊最高的身高和冷靜的頭腦，擅長「リードブロック (Read Block)」。雖然看似冷淡，但在對抗白鳥澤時展現了對排球的熱情，覺醒成為烏野的防壁。",
+                stats: { power: 2, jump: 3, stamina: 3, intellect: 5, technique: 3, speed: 2 }
+            },
+            { 
+                team: "karasuno", num: "12", name: "山口 忠", pos: "MB", img: "山口 忠.jpg", height: "179.5cm", birthday: "11月10日", 
+                food: "軟趴趴的炸薯條", concern: "如果有可愛的女生和他說話，他會只想著如何回話而什麼都說不出來",
+                quote: "「除了自尊心以外，還需要什麼理由！」",
+                desc: "關鍵發球員 (Pinch Server)。雖然是一年級中唯一的非正選，但不想被拋下。苦練跳躍飄球，在關鍵時刻登場，用發球破壞對手的一傳，為烏野創造得分機會。",
+                stats: { power: 2, jump: 3, stamina: 2, intellect: 3, technique: 2, speed: 2 }
+            },
+
+            // --- NEKOMA (音駒) ---
+            { 
+                team: "nekoma", num: "01", name: "黑尾 鐵朗", pos: "MB", img: "黑尾 鐵朗.jpg", height: "187.7cm", birthday: "11月17日", 
+                food: "鹽烤秋刀魚", concern: "擺不平睡亂的頭髮",
+                quote: "「我們是血液，要順暢無礙地流動。」",
+                desc: "音駒高中的主將，擅長「一人時間差」進攻和指揮攔網。性格看似輕浮實則深思熟慮，是典型的策略家。與研磨是青梅竹馬，非常照顧隊友。",
+                stats: { power: 3, jump: 3, stamina: 3, intellect: 5, technique: 5, speed: 3 }
+            },
+            { team: "nekoma", num: "02", name: "海 信行", pos: "WS", img: "海 信行.jpg", height: "176.5cm", birthday: "4月8日", food:"海葡萄", concern:"有些小事記不起來", quote:"「別在意，下一球。」", desc: "音駒的副主將，性格溫和穩重。各項技術都非常紮實，是隊伍中穩定軍心的存在。", stats: { power: 3, jump: 2, stamina: 3, intellect: 4, technique: 4, speed: 2 } },
+            { team: "nekoma", num: "03", name: "夜久 衛輔", pos: "Li", img: "夜久 衛輔.jpg", height: "165.2cm", birthday: "8月8日", food:"炒蔬菜", concern:"學弟們很讓人操心", quote:"「接球的話就交給我。」", desc: "音駒的防守核心，實力頂尖的自由球員。擁有極佳的接球技術和判斷力，連烏野的西谷都對他敬佩有加。", stats: { power: 2, jump: 3, stamina: 4, intellect: 4, technique: 5, speed: 4 } },
+            { team: "nekoma", num: "04", name: "山本 猛虎", pos: "WS", img: "山本 猛虎.jpg", height: "176.7cm", birthday: "2月22日", food:"炒麵", concern:"想跟女生說話", quote:"「毅力！！」", desc: "音駒的王牌，性格熱血直率，留著醒目的莫霍克頭。在場上充滿氣勢，重視毅力。", stats: { power: 4, jump: 3, stamina: 4, intellect: 2, technique: 3, speed: 3 } },
+            { 
+                team: "nekoma", num: "05", name: "孤爪 研磨", pos: "S", img: "孤爪 研磨.jpg", height: "169.2cm", birthday: "10月16日", 
+                food: "蘋果派", concern: "夏天太熱，冬天太冷",
+                quote: "「我沒有特別想贏，但也不想輸。」",
+                desc: "音駒的「大腦」。雖然體能一般且不喜歡流汗，但擁有極其敏銳的觀察力和戰術眼光。能冷靜分析對手弱點，像玩遊戲一樣攻略比賽，將對手玩弄於股掌之間。",
+                stats: { power: 1, jump: 2, stamina: 1, intellect: 5, technique: 5, speed: 3 }
+            },
+            { team: "nekoma", num: "06", name: "福永 招平", pos: "WS", img: "福永 招平.jpg", height: "178.3cm", birthday: "9月29日", food:"魷魚絲", concern:"山本太吵了", quote:"(冷笑話)", desc: "平時沉默寡言，但經常能打出路徑刁鑽的扣球得分。想法有時很獨特。", stats: { power: 3, jump: 3, stamina: 3, intellect: 3, technique: 4, speed: 3 } },
+            { team: "nekoma", num: "07", name: "犬岡 走", pos: "MB/WS", img: "犬岡 走.jpg", height: "185.3cm", birthday: "11月1日", food:"炸雞", concern:"會吃太多", quote:"「嗚哇！好快！」", desc: "一年級生，性格單純充滿活力。擁有極快的速度和反應能力。", stats: { power: 3, jump: 3, stamina: 4, intellect: 2, technique: 2, speed: 5 } },
+            { team: "nekoma", num: "11", name: "灰羽 列夫", pos: "MB", img: "灰羽 列夫.jpg", height: "194cm", birthday: "10月30日", food:"豆皮壽司", concern:"學長們好可怕", quote:"「我是音駒的王牌！」", desc: "日俄混血的一年級新生，擁有得天獨厚的身高和手腳長度。雖然是排球新手，技術粗糙，但天賦驚人。", stats: { power: 4, jump: 4, stamina: 3, intellect: 1, technique: 1, speed: 4 } },
+            { team: "nekoma", num: "12", name: "芝山 優生", pos: "Li", img: "芝山 優生.jpg", height: "162.5cm", birthday: "12月16日", food:"蛋包飯", concern:"接球還不夠好", quote:"「我會努力的！」", desc: "一年級的自由球員。性格較為膽小缺乏自信，但基本功紮實。", stats: { power: 1, jump: 2, stamina: 3, intellect: 3, technique: 3, speed: 3 } },
+
+            // --- SEIJOH (青城) ---
+            { 
+                team: "seijoh", num: "01", name: "及川 徹", pos: "S", img: "及川 徹.jpg", height: "184.3cm", birthday: "7月20日", 
+                food: "牛奶麵包", concern: "跟烏野的經理說話時被無視了",
+                quote: "「才能是可以栽培開花的，球感是可以磨練的。」",
+                desc: "青葉城西的主將，「大王者」。雖然不是天才，但透過地獄般的努力成為了能引發隊友100%實力的頂尖舉球員。擁有威力極大的殺人發球，是影山想超越的高牆。",
+                stats: { power: 5, jump: 3, stamina: 4, intellect: 4, technique: 5, speed: 3 }
+            },
+            { team: "seijoh", num: "02", name: "松川 一靜", pos: "MB", img: "松川 一靜.jpg", height: "187.9cm", birthday: "3月1日", food:"起司漢堡排", concern:"不穿制服看起來像大人", quote:"「別讓他太好過。」", desc: "擅長利用身高和經驗進行「封鎖式攔網」，限制對手王牌的進攻路線。", stats: { power: 3, jump: 2, stamina: 3, intellect: 4, technique: 4, speed: 3 } },
+            { team: "seijoh", num: "03", name: "花卷 貴大", pos: "WS", img: "花卷 貴大.jpg", height: "184.7cm", birthday: "1月27日", food:"泡芙", concern:"臂力輸給岩泉", quote:"(比YA)", desc: "技術全面的主攻手，在隊伍中經常擔任穩定軍心的角色。也能進行高品質的托球。", stats: { power: 3, jump: 3, stamina: 3, intellect: 3, technique: 4, speed: 3 } },
+            { 
+                team: "seijoh", num: "04", name: "岩泉 一", pos: "WS", img: "岩泉 一.jpg", height: "179.3cm", birthday: "6月10日", 
+                food: "炸豆腐", concern: "還差1cm就180cm了",
+                quote: "「你就是王牌！」",
+                desc: "青城的王牌，及川的青梅竹馬兼吐槽役。性格剛毅，深受隊友信賴。他的扣球充滿力量與決心，是在精神上支撐著青城與及川的重要支柱。",
+                stats: { power: 5, jump: 4, stamina: 4, intellect: 3, technique: 3, speed: 3 }
+            },
+            { team: "seijoh", num: "06", name: "矢巾 秀", pos: "S", img: "矢巾 秀.jpg", height: "181.9cm", birthday: "3月3日", food:"拉麵", concern:"前輩們畢業後怎麼辦", quote:"「把球交給我！」", desc: "二年級舉球員。在關鍵時刻能展現出前輩的擔當。", stats: { power: 2, jump: 2, stamina: 3, intellect: 3, technique: 3, speed: 3 } },
+            { team: "seijoh", num: "07", name: "渡 親治", pos: "Li", img: "渡 親治.jpg", height: "171.2cm", birthday: "4月3日", food:"水煮蛋", concern:"想再長高一點", quote:"「我來接！」", desc: "少數能熟練進行後排托球參與進攻的自由球員，增加了青城戰術的多樣性。", stats: { power: 2, jump: 3, stamina: 3, intellect: 3, technique: 3, speed: 3 } },
+            { team: "seijoh", num: "12", name: "金田一 勇太郎", pos: "MB", img: "金田一 勇太郎.jpg", height: "189.2cm", birthday: "6月6日", food:"烤玉米", concern:"班上的女生說他的頭像辣韮", quote:"「我會證明我比較強。」", desc: "擁有優秀的身高，擅長高點快攻。因為過去的經歷對影山抱有複雜的情感。", stats: { power: 3, jump: 3, stamina: 3, intellect: 3, technique: 3, speed: 3 } },
+            { team: "seijoh", num: "13", name: "國見 英", pos: "WS", img: "國見 英.jpg", height: "182.8cm", birthday: "3月25日", food:"鹽味焦糖", concern:"上課時保持清醒好累", quote:"「只要有效率就好。」", desc: "球風聰明冷靜，不喜歡無謂的浪費體力，常在比賽後段發揮真正的實力。", stats: { power: 3, jump: 2, stamina: 3, intellect: 5, technique: 4, speed: 3 } },
+            { team: "seijoh", num: "16", name: "京谷 賢太郎", pos: "WS", img: "京谷 賢太郎.jpg", height: "178.8cm", birthday: "12月7日", food:"炸雞塊", concern:"Lawson的炸雞君新口味", quote:"(低吼)", desc: "被稱為「狂犬」。性格暴躁，但擁有極強的身體素質和爆發力。擅長小斜線扣球。", stats: { power: 5, jump: 4, stamina: 4, intellect: 1, technique: 2, speed: 4 } },
+
+            // --- FUKURODANI (梟谷) ---
+            { team: "fukurodani", num: "02", name: "鷲尾 辰生", pos: "MB", img: "鷲尾 辰生.jpg", height: "188cm", birthday: "8月29日", food:"烤紅薯", concern:"最近表情肌有點僵硬", quote:"「防守吧。」", desc: "性格沉穩冷靜，攔網技術紮實，是隊伍防守端可靠的基石。", stats: { power: 4, jump: 3, stamina: 3, intellect: 3, technique: 3, speed: 3 } },
+            { team: "fukurodani", num: "03", name: "猿杙 大和", pos: "WS", img: "猿杙 大和.jpg", height: "181.5cm", birthday: "8月2日", food:"蘿蔔泥", concern:"想要更有特點", quote:"「笑一個嘛。」", desc: "發球和扣球能力都相當穩定，在場上總是保持著冷靜的笑容。", stats: { power: 3, jump: 3, stamina: 3, intellect: 3, technique: 3, speed: 3 } },
+            { 
+                team: "fukurodani", num: "04", name: "木兔 光太郎", pos: "WS", img: "木兔 光太郎.jpg", height: "185.3cm", birthday: "9月20日", 
+                food: "烤肉", concern: "怎麼寫漢字的「憂鬱」？",
+                quote: "「HEY HEY HEY ！」",
+                desc: "全國排名前五的主攻手，梟谷的主將。性格天真爛漫，情緒起伏極大（消極模式很麻煩）。但在狀態好時無人能擋，能讓敵我都為之振奮的超級球星。",
+                stats: { power: 5, jump: 4, stamina: 5, intellect: 1, technique: 3, speed: 4 }
+            },
+            { 
+                team: "fukurodani", num: "05", name: "赤葦 京治", pos: "S", img: "赤葦 京治.jpg", height: "182.3cm", birthday: "12月5日", 
+                food: "油菜花辛辣涼拌", concern: "還想要再強一點的體力",
+                quote: "「道就由我來開闢。」",
+                desc: "梟谷的副主將，最懂木兔的舉球員。性格冷靜理智，總是能完美處理木兔的情緒問題，並在場上做出最合理的判斷，是梟谷穩定的控制塔。",
+                stats: { power: 3, jump: 4, stamina: 4, intellect: 4, technique: 4, speed: 4 }
+            },
+            { team: "fukurodani", num: "07", name: "木葉 秋紀", pos: "WS", img: "木葉 秋紀.jpg", height: "178.8cm", birthday: "9月30日", food:"天婦羅", concern:"木兔的弱點太多了", quote:"「真是的，那個單細胞。」", desc: "各項技術都十分全面的「全能型選手」。經常負責吐槽木兔。", stats: { power: 3, jump: 3, stamina: 3, intellect: 4, technique: 4, speed: 3 } },
+            { team: "fukurodani", num: "11", name: "小見 春樹", pos: "Li", img: "小見 春樹.jpg", height: "164.7cm", birthday: "1月23日", food:"蝦", concern:"想長高", quote:"「交給我！」", desc: "性格開朗充滿活力。在場上反應迅速，擅長救起各種險球。", stats: { power: 2, jump: 3, stamina: 3, intellect: 3, technique: 3, speed: 4 } },
+
+            // --- SHIRATORIZAWA (白鳥澤) ---
+            { 
+                team: "shiratorizawa", num: "01", name: "牛島 若利", pos: "OP", img: "牛島 若利.jpg", height: "189.5cm", birthday: "8月13日", 
+                food: "林著牛肉蓋飯", concern: "沒有",
+                quote: "「即使再強的幼苗，若不種在肥沃的土壤也無法開花。」",
+                desc: "「絕對王者」，日本青年隊代表。擁有罕見的左撇子重砲和壓倒性的體格。堅信力量與高度就是一切，他的扣球能輕易粉碎對手的防守。",
+                stats: { power: 5, jump: 4, stamina: 5, intellect: 3, technique: 3, speed: 3 }
+            },
+            { team: "shiratorizawa", num: "03", name: "瀨見 英太", pos: "S", img: "瀨見 英太.jpg", height: "179.5cm", birthday: "11月11日", food:"鐵火卷", concern:"想在比賽中多上場", quote:"「看著吧！」", desc: "擁有威力強大的跳躍發球。經常作為關鍵發球員上場。", stats: { power: 4, jump: 3, stamina: 3, intellect: 3, technique: 3, speed: 3 } },
+            { team: "shiratorizawa", num: "04", name: "大平 獅音", pos: "WS", img: "大平 獅音.jpg", height: "182.7cm", birthday: "10月30日", food:"鯖魚味噌煮", concern:"被說長得像佛祖", quote:"「穩紮穩打。」", desc: "擁有極強的接發球能力，是白鳥澤防守體系中重要的一環。", stats: { power: 4, jump: 3, stamina: 3, intellect: 3, technique: 4, speed: 3 } },
+            { 
+                team: "shiratorizawa", num: "05", name: "天童 覺", pos: "MB", img: "天童 覺.jpg", height: "187.7cm", birthday: "5月20日", 
+                food: "巧克力冰淇淋", concern: "周圍的人說他不看氣氛",
+                quote: "「今天我的狀態是120%！」",
+                desc: "「猜測攔網的怪物 (Guess Monster)」。依靠直覺進行賭博式攔網，性格捉摸不定，喜歡用言語干擾對手。只要被他猜中，攔網就像銅牆鐵壁一般。",
+                stats: { power: 2, jump: 3, stamina: 3, intellect: 4, technique: 4, speed: 4 }
+            },
+            { team: "shiratorizawa", num: "08", name: "五色 工", pos: "WS", img: "五色 工.jpg", height: "181.5cm", birthday: "8月22日", food:"比目魚緣側", concern:"被牛島前輩誇獎了(驚)", quote:"「我才是王牌！」", desc: "一年級的王牌候補，性格單純直率。擅長直線扣球。", stats: { power: 4, jump: 3, stamina: 3, intellect: 2, technique: 4, speed: 3 } },
+            { team: "shiratorizawa", num: "10", name: "白布 賢二郎", pos: "S", img: "白布 賢二郎.jpg", height: "174.8cm", birthday: "5月4日", food:"吻仔魚", concern:"身高還想再長", quote:"「最華麗的托球是...」", desc: "為了能托球給牛島而考入白鳥澤。甘願隱藏自己的鋒芒，致力於為牛島提供最舒適的托球。", stats: { power: 2, jump: 2, stamina: 3, intellect: 4, technique: 4, speed: 3 } },
+            { 
+                team: "shiratorizawa", num: "12", name: "川西 太一", pos: "MB", img: "川西 太一.jpg", height: "188.3cm", birthday: "4月15日", 
+                food: "壽喜燒", concern: "好像有點花粉症", 
+                quote: "「我會跟上的。」", 
+                desc: "二年級副攻手。與天童的直覺攔網不同，他擅長冷靜的「リードブロック (Read Block)」。雖然不如天童顯眼，但作為穩定的防守一角，能紮實地執行攔網任務。", 
+                stats: { power: 3, jump: 3, stamina: 4, intellect: 4, technique: 3, speed: 3 } 
+            },
+            { team: "shiratorizawa", num: "14", name: "山形 隼人", pos: "Li", img: "山形 隼人.jpg", height: "174.3cm", birthday: "2月14日", food:"海膽", concern:"要留級了", quote:"「接起來了！」", desc: "性格積極充滿野性。在場上憑藉著直覺和爆發力救起各種困難的球。", stats: { power: 2, jump: 3, stamina: 3, intellect: 3, technique: 3, speed: 4 } },
+
+            // --- INARIZAKI (稻荷崎) ---
+            { team: "inarizaki", num: "01", name: "北 信介", pos: "WS", img: "北 信介.jpg", height: "175.2cm", birthday: "7月5日", food:"豆腐漢堡排", concern:"祖母的腰痛", quote:"「我不做沒把握的事。」", desc: "稻荷崎高中的主將，被稱為「絕對的規律」。在場上能以極度的冷靜和正確性穩定軍心。", stats: { power: 3, jump: 2, stamina: 3, intellect: 5, technique: 4, speed: 3 } },
+            { team: "inarizaki", num: "02", name: "大耳 練", pos: "MB", img: "大耳 練.jpg", height: "191.5cm", birthday: "4月17日", food:"白飯", concern:"最近有點胖了", quote:"(無言)", desc: "身材高大。擁有優秀的攔網判斷能力，擅長像牆壁一樣封鎖對手。", stats: { power: 4, jump: 3, stamina: 3, intellect: 3, technique: 3, speed: 3 } },
+            { team: "inarizaki", num: "04", name: "尾白 阿蘭", pos: "WS", img: "尾白 阿蘭.jpg", height: "184.7cm", birthday: "4月4日", food:"餅乾", concern:"吐槽役太累了", quote:"「別小看我們。」", desc: "稻荷崎的王牌，全國排名前五的主攻手。擁有驚人的力量和彈跳力。", stats: { power: 5, jump: 4, stamina: 4, intellect: 3, technique: 3, speed: 3 } },
+            { team: "inarizaki", num: "05", name: "銀島 結", pos: "WS", img: "銀島 結.jpg", height: "180.3cm", birthday: "8月21日", food:"漢堡", concern:"感冒剛好", quote:"「好球！」", desc: "擅長利用時間差進行攻擊。屬於發揮穩定、不可或缺的戰力。", stats: { power: 3, jump: 3, stamina: 3, intellect: 3, technique: 3, speed: 3 } },
+             { 
+                team: "inarizaki", num: "07", name: "宮 侑", pos: "S", img: "宮 侑.jpg", height: "183.6cm", birthday: "10月5日", 
+                food: "金槍魚肚", concern: "指尖稍微有點乾燥",
+                quote: "「連我這個托球都打不好的傢伙就是廢物。」",
+                desc: "高中最強舉球員之一，「高校NO.1 Setter」。掌握跳發與跳飄的二刀流發球。雖然性格惡劣，但對排球無比真誠，致力於為攻手提供最完美的托球。",
+                stats: { power: 3, jump: 4, stamina: 4, intellect: 5, technique: 5, speed: 4 }
+            },
+            { team: "inarizaki", num: "10", name: "角名 倫太郎", pos: "MB", img: "角名 倫太郎.jpg", height: "185.7cm", birthday: "1月25日", food:"果凍", concern:"不想動", quote:"「這球會進。」", desc: "擅長利用強大的軀幹核心力量進行廣角扣球，能繞過攔網得分。", stats: { power: 3, jump: 3, stamina: 3, intellect: 4, technique: 5, speed: 3 } },
+            { 
+                team: "inarizaki", num: "11", name: "宮 治", pos: "OP", img: "宮 治.jpg", height: "183.8cm", birthday: "10月5日", 
+                food: "飯糰", concern: "人生最後一天要吃什麼",
+                quote: "「只要稍微有點空隙，我就會打過去。」",
+                desc: "宮侑的雙胞胎弟弟。相較於哥哥更加冷靜穩重，攻守兼備。與哥哥有著心靈感應般的默契，能使出令人眼花繚亂的「雙子快攻」。",
+                stats: { power: 4, jump: 4, stamina: 4, intellect: 4, technique: 4, speed: 4 }
+            },
+            { team: "inarizaki", num: "15", name: "赤木 路成", pos: "Li", img: "赤木 路成.jpg", height: "174.2cm", birthday: "4月12日", food:"章魚燒", concern:"皮膚乾燥", quote:"「救起來了！」", desc: "反應速度極快。擅長在混亂中救起看似不可能的球。", stats: { power: 2, jump: 3, stamina: 4, intellect: 3, technique: 4, speed: 4 } },
+
+            // --- DATEKO (伊達工) ---
+            { team: "dateko", num: "01", name: "茂庭 要", pos: "S", img: "茂庭 要.jpg", height: "176.3cm", birthday: "9月6日", food:"栗子飯", concern:"學弟們太難管了", quote:"「交給你們了！」", desc: "前任伊達工主將，性格溫和，以穩健的調度帶領隊伍。", stats: { power: 2, jump: 2, stamina: 3, intellect: 3, technique: 3, speed: 2 } },
+            { team: "dateko", num: "02", name: "二口 堅治", pos: "WS", img: "二口 堅治.jpg", height: "184.2cm", birthday: "11月10日", food:"酸梅軟糖", concern:"要當主將好麻煩", quote:"「敲碎他們！」", desc: "伊達工業的新主將，性格有些惡劣喜歡挑釁。繼承了「鐵壁」的意志。", stats: { power: 4, jump: 3, stamina: 3, intellect: 4, technique: 3, speed: 3 } },
+            { team: "dateko", num: "03", name: "鎌先 靖志", pos: "MB", img: "鎌先 靖志.jpg", height: "186.8cm", birthday: "11月8日", food:"白豆沙", concern:"肌肉練得不夠", quote:"「喝啊！」", desc: "肌肉發達，性格熱血衝動。擅長利用力量進行快攻。", stats: { power: 4, jump: 3, stamina: 4, intellect: 2, technique: 2, speed: 3 } },
+            { team: "dateko", num: "07", name: "青根 高伸", pos: "MB", img: "青根 高伸.jpg", height: "191.8cm", birthday: "8月13日", food:"栗金團", concern:"搭電車時沒有人敢坐在他旁邊", quote:"(無言地點頭)", desc: "伊達工「鐵壁」的核心。沉默寡言，擁有驚人的反應與力量，是所有主攻手的噩夢。", stats: { power: 5, jump: 3, stamina: 3, intellect: 3, technique: 3, speed: 4 } },
+            { team: "dateko", num: "08", name: "黃金川 貫至", pos: "S", img: "黃金川 貫至.jpg", height: "191.5cm", birthday: "7月9日", food:"豬排飯", concern:"托球好難", quote:"「我會擋下來的！」", desc: "一年級的大型新人。擁有舉球員中少見的巨大身高優勢。", stats: { power: 3, jump: 3, stamina: 3, intellect: 1, technique: 1, speed: 3 } },
+            { team: "dateko", num: "13", name: "作並 浩輔", pos: "Li", img: "作並 浩輔.jpg", height: "164cm", birthday: "8月30日", food:"柿種", concern:"太矮了", quote:"「我來！」", desc: "一年級自由球員，性格認真努力。以靈活的防守支援著隊伍。", stats: { power: 2, jump: 2, stamina: 3, intellect: 3, technique: 3, speed: 4 } },
+
+            // --- KAMOMEDAI (鷗台) ---
+            { team: "kamomedai", num: "01", name: "諏訪 愛吉", pos: "S", img: "諏訪 愛吉.jpg", height: "177.8cm", birthday: "6月30日", food:"文字燒", concern:"想去旅遊", quote:"「習慣是第二天性。」", desc: "鷗台高中的主將。性格穩重，擅長攔網，能構築出堅固的攔網體系。", stats: { power: 3, jump: 2, stamina: 3, intellect: 4, technique: 4, speed: 2 } },
+            { team: "kamomedai", num: "05", name: "星海 光來", pos: "WS", img: "星海 光來.jpg", height: "169cm", birthday: "4月16日", food:"海苔卷", concern:"總是被當成小學生", quote:"「我就是現代的小巨人！」", desc: "被稱為「現代的小巨人」。雖然矮小，但全能無死角。跳躍力、技術、力量皆為頂尖。", stats: { power: 3, jump: 5, stamina: 5, intellect: 4, technique: 5, speed: 4 } },
+            { team: "kamomedai", num: "06", name: "晝神 幸郎", pos: "MB", img: "晝神 幸郎.jpg", height: "190cm", birthday: "2月3日", food:"具多麵包", concern:"被說眼睛沒笑", quote:"「別著急。」", desc: "被稱為「不動的晝神」。擁有極度冷靜的心態，實施最理性的攔網。", stats: { power: 3, jump: 3, stamina: 3, intellect: 5, technique: 5, speed: 3 } },
+            { team: "kamomedai", num: "10", name: "白馬 芽生", pos: "WS", img: "白馬 芽生.jpg", height: "203cm", birthday: "6月27日", food:"披薩", concern:"移動很麻煩", quote:"「好高！」", desc: "身高超過兩米的巨漢主攻手。憑藉著壓倒性的身高優勢，能打出超高打點的扣球。", stats: { power: 5, jump: 3, stamina: 3, intellect: 2, technique: 2, speed: 2 } }
+        ];
+
+        const posData = {
+            "WS-F": { title: "WS: Wing Spiker (Front)", fullname: "主攻手 (前排左)", desc: "通常是隊伍的主要得分點，負責處理調整球和進行強攻。" },
+            "MB": { title: "MB: Middle Blocker", fullname: "攔中手 (前排中)", desc: "負責執行快攻吸引攔網，並作為防守第一線的核心攔網手。" },
+            "S-OP": { title: "S / OP: Setter/Opposite", fullname: "舉球/舉對 (前排右)", desc: "若為S則是進攻組織者；若為OP則是右側強攻點，這位置攔網責任也重。" },
+            "WS-B": { title: "WS: Wing Spiker (Back)", fullname: "主攻手 (後排左)", desc: "在後排時負責大範圍的接發球與防守，必要時進行後排進攻。" },
+            "Li": { title: "Li: Libero", fullname: "自由球員 (後排中)", desc: "專職防守的球員，身穿不同球衣，負責指揮後排防守，不可發球或攻擊。" },
+            "OP-S": { title: "OP / S: Serving Position", fullname: "舉對/舉球 (後排右/發球)", desc: "輪轉到此位置的球員負責發球。通常是OP或S的防守起始位置。" }
+        };
+
+        const schoolData = {
+            karasuno: { motto: "飛べ", logo: "烏" },
+            nekoma: { motto: "繋げ", logo: "貓" },
+            seijoh: { motto: "コートを制す", logo: "葉" },
+            fukurodani: { motto: "一球入魂", logo: "梟" },
+            shiratorizawa: { motto: "強者であれ", logo: "鷲" },
+            inarizaki: { motto: "思い出なんかいらん", logo: "狐" },
+            dateko: { motto: "伊達の鉄壁", logo: "壁" },
+            kamomedai: { motto: "習慣は第二の天性なり", logo: "鷗" }
+        };
+
+        // --- Core Functions ---
+        function enterSite() {
+            const container = document.getElementById('feather-container');
+            container.style.display = 'block';
+            for(let i=0; i<30; i++) {
+                let f = document.createElement('div');
+                f.className = 'feather';
+                f.style.left = Math.random() * 100 + '%';
+                f.style.animationDelay = Math.random() * 0.5 + 's';
+                f.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
+                container.appendChild(f);
+            }
+            setTimeout(() => {
+                document.getElementById('hero').classList.add('slide-out');
+                document.getElementById('mainApp').classList.add('active');
+            }, 1500); 
+        }
+
+        function switchTab(tabName, btnEl) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            btnEl.classList.add('active');
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            window.scrollTo(0, 0);
+            if(tabName === 'roster') backToRoster();
+        }
+
+        function openSongs() {
+            const modal = document.getElementById('songModal');
+            modal.style.display = 'flex';
+            setTimeout(() => { modal.classList.add('active'); }, 10);
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('active');
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+
+        // --- Roster Logic ---
+        const rosterGrid = document.getElementById('rosterGrid');
+        const listView = document.getElementById('roster-list-view');
+        const detailView = document.getElementById('roster-detail-view');
+        const schoolCard = document.getElementById('schoolInfoCard');
+        const schoolMotto = document.getElementById('schoolMotto');
+        const schoolLogo = document.getElementById('schoolLogo');
+
+        function renderRoster(filter = 'all') {
+            rosterGrid.innerHTML = '';
+            const target = filter === 'all' ? players : players.filter(p => p.team === filter);
+            target.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                card.onclick = () => showPlayerDetail(players.indexOf(p));
+                card.innerHTML = `
+                    <img src="${p.img}" class="pc-img" alt="${p.name}">
+                    <div class="manga-overlay"></div>
+                    <div class="pc-info"><div class="pc-num">${p.num}</div><div class="pc-name">${p.name}</div><div class="pc-pos">${p.pos}</div></div>
+                `;
+                rosterGrid.appendChild(card);
+            });
+        }
+        
+        function filterTeam(team, btn, color) {
+            document.documentElement.style.setProperty('--theme-color', color);
+            document.querySelectorAll('.school-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            schoolCard.style.animation = 'none';
+            schoolCard.offsetHeight; 
+            schoolCard.style.animation = null; 
+
+            if (team === 'all') schoolCard.style.display = 'none';
+            else {
+                schoolCard.style.display = 'block';
+                if(schoolData[team]) { schoolMotto.innerText = schoolData[team].motto; schoolLogo.innerText = schoolData[team].logo; }
+            }
+            backToRoster();
+            renderRoster(team);
+        }
+
+        function showPlayerDetail(index) {
+            const p = players[index];
+            
+            // 1. Basic Info
+            document.getElementById('detailImg').src = p.img;
+            document.getElementById('detailName').innerText = p.name;
+            document.getElementById('detailBgName').innerText = p.name.split(' ')[0] || "HQ"; 
+            const teamMap = { karasuno: "烏野", nekoma: "音駒", seijoh: "青城", fukurodani: "梟谷", shiratorizawa: "白鳥澤", inarizaki: "稻荷崎", dateko: "伊達工", kamomedai: "鷗台" };
+            document.getElementById('detailTeam').innerText = teamMap[p.team] || p.team.toUpperCase();
+            document.getElementById('detailNum').innerText = "#" + p.num;
+            document.getElementById('detailPos').innerText = p.pos;
+            document.getElementById('detailHeight').innerText = p.height;
+            document.getElementById('detailBirthday').innerText = p.birthday;
+
+            // 2. Extra Info
+            document.getElementById('detailFood').innerText = p.food || "未知";
+            document.getElementById('detailConcern').innerText = p.concern || "排球就是一切！";
+            document.getElementById('detailQuote').innerText = p.quote || "「飛べ！」";
+            document.getElementById('detailDesc').innerText = p.desc;
+
+            // 3. Render Stats Bars
+            const statContainer = document.getElementById('statContainer');
+            statContainer.innerHTML = '';
+            
+            const s = p.stats || { power: 3, jump: 3, stamina: 3, intellect: 3, technique: 3, speed: 3 };
+            const labels = { power: "力量", jump: "彈跳", stamina: "體力", intellect: "頭腦", technique: "技術", speed: "速度" };
+            
+            for (let key in labels) {
+                const val = s[key]; // 1 to 5
+                const percent = (val / 5) * 100;
+                
+                const row = document.createElement('div');
+                row.className = 'stat-row';
+                row.innerHTML = `
+                    <div class="stat-label">${labels[key]}</div>
+                    <div class="stat-bar-bg">
+                        <div class="stat-bar-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="stat-val">${val}</div>
+                `;
+                statContainer.appendChild(row);
+
+                setTimeout(() => {
+                    row.querySelector('.stat-bar-fill').style.width = percent + '%';
+                }, 100);
+            }
+
+            listView.style.display = 'none';
+            detailView.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function backToRoster() { 
+            detailView.style.display = 'none'; 
+            listView.style.display = 'block'; 
+            window.scrollTo(0,0);
+        }
+        renderRoster();
+
+        // --- 2D COURT LOGIC ---
+        function showPosInfo(key, element) {
+            const info = posData[key];
+            if(info) {
+                document.getElementById('posTitle').innerText = info.title;
+                document.getElementById('posFullname').innerText = info.fullname;
+                document.getElementById('posDesc').innerHTML = info.desc;
+                document.getElementById('posIcon').innerText = key.split('-')[0];
+                
+                document.querySelectorAll('.court-zone').forEach(z => z.classList.remove('active'));
+                element.classList.add('active');
+            }
+        }
+
+        // --- GAME LOGIC ---
+        let gameState = 'idle';
+        let cursorVal = 0;
+        let direction = 1;
+        let animId;
+        let score = 0;
+        
+        let gameSpeed = 2.5;
+        let redZoneWidth = 15;
+        let redZoneLeft = 42.5;
+        
+        const cursor = document.getElementById('cursor');
+        const btn = document.getElementById('actionBtn');
+        const ball = document.getElementById('serveBall');
+        const char = document.getElementById('serveChar');
+        const msg = document.getElementById('gameMsg');
+        const scoreDisplay = document.getElementById('scoreVal');
+        const pbRed = document.getElementById('pbRed');
+        const diffBtns = document.querySelectorAll('.diff-btn');
+
+        function setDifficulty(level) {
+            diffBtns.forEach(b => b.classList.remove('active'));
+            document.querySelector(`.diff-btn[data-level="${level}"]`).classList.add('active');
+
+            if (level === 'easy') {
+                gameSpeed = 1.5;
+                redZoneWidth = 30; redZoneLeft = 35;
+            } else if (level === 'normal') {
+                gameSpeed = 2.5;
+                redZoneWidth = 15; redZoneLeft = 42.5;
+            } else if (level === 'hard') {
+                gameSpeed = 4.5;
+                redZoneWidth = 5; redZoneLeft = 47.5;
+            }
+            pbRed.style.width = redZoneWidth + '%';
+            pbRed.style.left = redZoneLeft + '%';
+        }
+        setDifficulty('normal');
+
+        btn.addEventListener('click', () => {
+            if (gameState === 'idle') {
+                gameState = 'serving';
+                btn.textContent = "HIT!";
+                btn.style.backgroundColor = "#e74c3c";
+                
+                char.classList.add('jump');
+                ball.style.transition = "0.5s ease-out"; 
+                ball.style.transform = "translateY(-120px)"; 
+                
+                msg.classList.remove('show');
+                runBar();
+            } else if (gameState === 'serving') {
+                gameState = 'result';
+                cancelAnimationFrame(animId);
+                btn.disabled = true;
+
+                let points = 0;
+                let text = "";
+                let color = "";
+                
+                const winStart = redZoneLeft;
+                const winEnd = redZoneLeft + redZoneWidth;
+                const nearMissRange = 15; 
+
+                if (cursorVal >= winStart && cursorVal <= winEnd) {
+                    text = "SERVICE ACE!!"; color = "#e74c3c"; points = 100;
+                    ball.style.transition = "0.2s cubic-bezier(0,1,0.5,1)";
+                    ball.style.transform = "translate(500px, -50px) scale(0.5)";
+                } else if (cursorVal >= (winStart - nearMissRange) && cursorVal <= (winEnd + nearMissRange)) {
+                    text = "NICE SERVE!"; color = "#f1c40f"; points = 50;
+                    ball.style.transition = "0.4s ease-out";
+                    ball.style.transform = "translate(300px, 50px) scale(0.8)";
+                } else {
+                    text = "OUT..."; color = "#95a5a6"; points = 0;
+                    ball.style.transition = "0.5s ease-out";
+                    ball.style.transform = "translate(100px, 150px)";
+                }
+
+                msg.textContent = text;
+                msg.style.color = color;
+                msg.classList.add('show');
+                score += points;
+                scoreDisplay.textContent = score;
+
+                setTimeout(resetGame, 2000);
+            }
+        });
+
+        function runBar() {
+            if(gameState !== 'serving') return;
+            cursorVal += gameSpeed * direction; 
+            if(cursorVal >= 100) { cursorVal = 100; direction = -1; }
+            if(cursorVal <= 0) { cursorVal = 0; direction = 1; }
+            cursor.style.left = cursorVal + '%';
+            animId = requestAnimationFrame(runBar);
+        }
+
+        function resetGame() {
+            gameState = 'idle';
+            btn.disabled = false;
+            btn.textContent = "START";
+            btn.style.backgroundColor = "var(--theme-color)";
+            
+            char.classList.remove('jump');
+            ball.style.transition = 'none';
+            ball.style.transform = "translate(0,0) scale(1)";
+            
+            msg.classList.remove('show');
+            cursorVal = 0;
+            direction = 1;
+            cursor.style.left = '0%';
+        }
+    </script>
 </body>
 </html>
